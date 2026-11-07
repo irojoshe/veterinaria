@@ -21,7 +21,7 @@ const PASOS = [
 
 export default function PasosSection() {
   return (
-    <section className="max-w-content mx-auto px-20 py-16 flex flex-col gap-10">
+    <section className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 py-20 md:py-28 flex flex-col gap-12">
       <div className="flex flex-col gap-3 max-w-lg">
         <span className="text-12 font-bold tracking-wide uppercase text-primary">
           Fácil y sin registro

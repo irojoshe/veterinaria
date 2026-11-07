@@ -7,7 +7,7 @@ export default function ServiciosDestacados({ servicios }: { servicios: Servicio
   const destacados = servicios.slice(0, 3)
 
   return (
-    <section className="max-w-content mx-auto px-20 py-16 flex flex-col gap-10">
+    <section className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 py-20 md:py-28 flex flex-col gap-12">
       {/* Cabecera */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="flex flex-col gap-3 max-w-lg">

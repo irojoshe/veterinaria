@@ -12,7 +12,7 @@ const FOOTER_LINKS = [
 export default function Footer() {
   return (
     <footer className="bg-primary-deeper text-background-surface" aria-label="Pie de página">
-      <div className="max-w-content mx-auto px-16 py-16 flex flex-col gap-7">
+      <div className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-16 py-16 md:py-20 flex flex-col gap-7">
 
         {/* Marca + info */}
         <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-20">

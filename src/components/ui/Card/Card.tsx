@@ -26,7 +26,7 @@ export default function Card({
     <div
       className={twMerge(
         clsx(
-          'bg-background-surface rounded-lg',
+          'bg-background-surface rounded-2xl shadow-[0_12px_35px_rgba(24,55,47,0.07)]',
           bordered && 'border border-border',
           paddingStyles[padding],
           className

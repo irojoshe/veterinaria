@@ -5,7 +5,7 @@ import type { Negocio } from '@/lib/types'
 
 export default function HeroSection({ negocio }: { negocio: Negocio }) {
   return (
-    <section className="max-w-content mx-auto px-20 py-12 md:py-16
+    <section className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 py-14 md:py-24
                         flex flex-col md:flex-row items-center gap-16">
       {/* Texto */}
       <div className="flex flex-col gap-7 flex-1">
