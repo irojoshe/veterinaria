@@ -5,23 +5,23 @@ import type { Negocio } from '@/lib/types'
 
 export default function HeroSection({ negocio }: { negocio: Negocio }) {
   return (
-    <section className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 py-14 md:py-24
-                        flex flex-col md:flex-row items-center gap-16">
+    <section className="max-w-6xl mx-auto w-full px-page-px md:px-page-px-md lg:px-page-px-lg py-page-h md:py-page-h-lg
+                        flex flex-col md:flex-row items-center gap-gap-lg">
       {/* Texto */}
-      <div className="flex flex-col gap-7 flex-1">
-        <div className="flex flex-col gap-3">
-          <span className="text-12 font-bold tracking-wide uppercase text-primary">
+      <div className="flex flex-col gap-gap-lg flex-1">
+        <div className="flex flex-col gap-gap-md">
+          <span className="text-tiny font-bold tracking-wide uppercase text-brand-primary">
             Cerca de ti, cerca de ellos
           </span>
-          <h1 className="text-32 md:text-52 font-semibold text-text-heading leading-tight">
+          <h1 className="text-h1 md:text-h1 font-semibold text-text-primary leading-tight">
             Su bienestar.<br />Nuestra forma<br />de cuidar.
           </h1>
-          <p className="text-18 text-text-muted leading-relaxed max-w-md">
+          <p className="text-body text-text-secondary leading-relaxed max-w-md">
             {negocio.descripcion}
           </p>
         </div>
 
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-gap-md flex-wrap">
           <Button asChild size="lg">
             <Link href="/cita">Solicitar cita</Link>
           </Button>
@@ -30,14 +30,14 @@ export default function HeroSection({ negocio }: { negocio: Negocio }) {
           </Button>
         </div>
 
-        <p className="text-12 text-text-muted">
+        <p className="text-tiny text-text-muted">
           Sin registro · Te contactamos para confirmar tu cita
         </p>
       </div>
 
       {/* Fotografía */}
-      <div className="flex flex-col gap-3.5 w-full md:w-hero-md shrink-0">
-      <div className="relative w-full h-card-image-sm md:h-card-image-xl rounded-2xl overflow-hidden">
+      <div className="flex flex-col gap-gap-md w-full md:w-hero-md shrink-0">
+      <div className="relative w-full h-card-image-sm md:h-card-image-xl rounded-hero overflow-hidden">
           <Image
             src="/images/hero-clinica.jpg"
             alt="Veterinaria atendiendo a una mascota en Huella Vet"
@@ -48,8 +48,8 @@ export default function HeroSection({ negocio }: { negocio: Negocio }) {
           />
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-12 text-text-muted">Pequeños gestos. Grandes vínculos.</span>
-          <span className="text-12 text-text-muted">Huella Vet — Madrid</span>
+          <span className="text-tiny text-text-muted">Pequeños gestos. Grandes vínculos.</span>
+          <span className="text-tiny text-text-muted">Huella Vet — Madrid</span>
         </div>
       </div>
     </section>

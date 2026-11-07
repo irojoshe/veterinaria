@@ -21,24 +21,24 @@ const PASOS = [
 
 export default function PasosSection() {
   return (
-    <section className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 py-20 md:py-28 flex flex-col gap-12">
-      <div className="flex flex-col gap-3 max-w-lg">
-        <span className="text-12 font-bold tracking-wide uppercase text-primary">
+    <section className="max-w-6xl mx-auto w-full px-page-px md:px-page-px-md lg:px-page-px-lg py-page-h-xxl md:py-page-h-xl flex flex-col gap-gap-lg">
+      <div className="flex flex-col gap-gap-md max-w-lg">
+        <span className="text-tiny font-bold tracking-wide uppercase text-brand-primary">
           Fácil y sin registro
         </span>
-        <h2 className="text-32 font-semibold text-text-heading">
+        <h2 className="text-h2 font-semibold text-text-primary">
           Tu próxima visita, paso a paso.
         </h2>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-10">
+      <div className="flex flex-col md:flex-row gap-huge">
         {PASOS.map((paso) => (
-          <div key={paso.numero} className="flex flex-col gap-3 flex-1">
-            <span className="text-32 font-regular text-primary leading-none">
+          <div key={paso.numero} className="flex flex-col gap-gap-md flex-1">
+            <span className="text-4xl font-regular text-brand-primary leading-none">
               {paso.numero}
             </span>
-            <h3 className="text-18 font-semibold text-text-main">{paso.titulo}</h3>
-            <p className="text-14 text-text-muted leading-relaxed">{paso.texto}</p>
+            <h3 className="text-h5 font-semibold text-text-primary">{paso.titulo}</h3>
+            <p className="text-body text-text-secondary leading-relaxed">{paso.texto}</p>
           </div>
         ))}
       </div>

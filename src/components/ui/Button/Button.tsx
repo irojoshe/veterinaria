@@ -18,16 +18,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-primary text-background-surface hover:bg-primary-dark active:bg-primary-deeper ' +
-    'disabled:bg-border disabled:text-text-muted',
+    'bg-brand-primary text-bg-default hover:bg-brand-secondary active:bg-brand-secondary ' +
+    'disabled:bg-border-light disabled:text-text-muted',
   secondary:
-    'bg-background-surface text-primary border border-border hover:bg-background ' +
-    'active:bg-border disabled:opacity-50',
+    'bg-bg-default text-brand-primary border border-border-default hover:bg-bg-secondary ' +
+    'active:bg-border-light disabled:opacity-50',
   outline:
-    'bg-transparent text-primary border border-primary hover:bg-accent-green-light ' +
-    'active:bg-border-muted disabled:opacity-50',
+    'bg-transparent text-brand-primary border border-brand-primary hover:bg-bg-secondary ' +
+    'active:bg-border-light disabled:opacity-50',
   danger:
-    'bg-status-cancelled text-background-surface hover:opacity-90 ' +
+    'bg-status-cancelled text-bg-default hover:opacity-90 ' +
     'active:opacity-80 disabled:opacity-50',
 }
 
@@ -56,9 +56,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const computedClass = twMerge(
       clsx(
-        'inline-flex items-center justify-center font-semibold rounded-full',
+        'inline-flex items-center justify-center font-semibold rounded-input',
         'transition-colors duration-150 cursor-pointer select-none',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
         'disabled:cursor-not-allowed',
         variantStyles[variant],
         sizeStyles[size],
@@ -80,9 +80,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         className={twMerge(
           clsx(
-            'inline-flex items-center justify-center font-semibold rounded-full',
+            'inline-flex items-center justify-center font-semibold rounded-input',
             'transition-colors duration-150 cursor-pointer select-none',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
             'disabled:cursor-not-allowed',
             variantStyles[variant],
             sizeStyles[size],
