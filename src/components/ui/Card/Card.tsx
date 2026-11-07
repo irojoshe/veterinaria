@@ -10,9 +10,9 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const paddingStyles = {
   none: '',
-  sm:   'p-3',
-  md:   'p-6',
-  lg:   'p-8',
+  sm:   'p-gap-sm',
+  md:   'p-card',
+  lg:   'p-section',
 }
 
 export default function Card({
@@ -26,8 +26,8 @@ export default function Card({
     <div
       className={twMerge(
         clsx(
-          'bg-background-surface rounded-2xl shadow-[0_12px_35px_rgba(24,55,47,0.07)]',
-          bordered && 'border border-border',
+          'bg-bg-default rounded-card shadow-card',
+          bordered && 'border border-border-default',
           paddingStyles[padding],
           className
         )

@@ -22,7 +22,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-13 font-semibold text-text-main"
+            className="text-label font-semibold text-text-primary"
           >
             {label}
           </label>
@@ -37,14 +37,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={hasError}
           className={twMerge(
             clsx(
-              'w-full h-btn px-3.5 rounded-md text-14 text-text-main bg-background-surface',
+              'w-full h-9 px-gap-md rounded-input text-body text-text-primary bg-bg-default',
               'border transition-colors duration-150 outline-none',
               'placeholder:text-text-muted',
-              'focus:ring-2 focus:ring-primary focus:border-primary',
+              'focus:ring-2 focus:ring-brand-primary focus:border-brand-primary',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               hasError
                 ? 'border-status-cancelled focus:ring-status-cancelled'
-                : 'border-border',
+                : 'border-border-default',
               className
             )
           )}
@@ -52,13 +52,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         />
 
         {error && (
-          <p id={`${inputId}-error`} className="text-12 text-status-cancelled" role="alert">
+          <p id={`${inputId}-error`} className="text-small text-status-cancelled" role="alert">
             {error}
           </p>
         )}
 
         {!error && helperText && (
-          <p id={`${inputId}-helper`} className="text-12 text-text-muted">
+          <p id={`${inputId}-helper`} className="text-small text-text-muted">
             {helperText}
           </p>
         )}
