@@ -27,7 +27,7 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
-    <header className="w-full bg-background border-b border-border sticky top-0 z-40">
+    <header className="w-full bg-background/95 backdrop-blur border-b border-border sticky top-0 z-40">
       <div className="w-full h-banner bg-accent-green-light flex items-center justify-center">
         <span className="text-11 text-primary font-semibold">
           Un espacio para cuidar de quienes te acompañan · Clínica y datos de ejemplo

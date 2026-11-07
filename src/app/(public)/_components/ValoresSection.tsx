@@ -19,7 +19,7 @@ const VALORES = [
 export default function ValoresSection() {
   return (
     <section
-      className="w-full bg-accent-green-light py-6 px-20"
+      className="w-full bg-accent-green-light py-8 px-6 md:px-12 lg:px-20"
       aria-label="Valores de la clínica"
     >
       <div className="max-w-content mx-auto flex flex-col md:flex-row gap-6">

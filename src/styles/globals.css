@@ -1,18 +1,60 @@
 @import "tailwindcss";
-@config "../../tailwind.config.ts";
+
+@theme {
+  --font-sans: "Arial", "Helvetica Neue", sans-serif;
+  --font-display: "Georgia", "Times New Roman", serif;
+
+  --color-background: #f6f4ef;
+  --color-background-surface: #fffdf8;
+  --color-background-warm: #ebe5da;
+  --color-primary: #315d4e;
+  --color-primary-dark: #24493d;
+  --color-primary-deeper: #18372f;
+  --color-accent-green-light: #dce8df;
+  --color-text-main: #26332e;
+  --color-text-heading: #18372f;
+  --color-text-muted: #68736d;
+  --color-border: #d9d8cf;
+  --color-border-muted: #abb9b0;
+  --color-border-dark: #426255;
+  --color-status-cancelled: #a84f4f;
+
+  --spacing-content: 1440px;
+  --spacing-header-desktop: 84px;
+  --spacing-banner: 34px;
+  --spacing-btn: 48px;
+  --spacing-brand-icon: 38px;
+  --spacing-sidebar-min: 220px;
+  --spacing-hero-md: 52%;
+  --spacing-contact-md: 42%;
+  --spacing-card-image-sm: 210px;
+  --spacing-card-image-xl: 540px;
+  --spacing-hero-contact: 360px;
+
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-18: 1.125rem;
+  --text-22: 1.375rem;
+  --text-25: 1.5625rem;
+  --text-26: 1.625rem;
+  --text-32: 2rem;
+  --text-52: 3.25rem;
+}
 
 @layer base {
+  :root { color-scheme: light; }
+  html { scroll-behavior: smooth; }
   body {
     @apply bg-background text-text-main font-sans antialiased;
+    letter-spacing: -0.01em;
   }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.035em; }
+  *, *::before, *::after { box-sizing: border-box; }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+::selection { background: #b9d2c1; color: #18372f; }

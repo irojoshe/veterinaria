@@ -5,10 +5,10 @@ import type { Negocio } from '@/lib/types'
 export default function ContactoSection({ negocio }: { negocio: Negocio }) {
   return (
     <section
-      className="w-full bg-accent-green-light py-16"
+      className="w-full bg-accent-green-light py-20 md:py-28"
       aria-label="Contacto y horarios"
     >
-      <div className="max-w-content mx-auto px-20 flex flex-col md:flex-row gap-16">
+      <div className="max-w-content mx-auto w-full px-6 md:px-12 lg:px-20 flex flex-col md:flex-row gap-12 lg:gap-20">
         {/* Datos */}
         <div className="flex flex-col gap-6 flex-1">
           <div className="flex flex-col gap-3">

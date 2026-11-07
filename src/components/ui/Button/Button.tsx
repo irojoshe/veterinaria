@@ -56,7 +56,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const computedClass = twMerge(
       clsx(
-        'inline-flex items-center justify-center font-semibold rounded-md',
+        'inline-flex items-center justify-center font-semibold rounded-full',
         'transition-colors duration-150 cursor-pointer select-none',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         'disabled:cursor-not-allowed',
@@ -80,7 +80,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         className={twMerge(
           clsx(
-            'inline-flex items-center justify-center font-semibold rounded-md',
+            'inline-flex items-center justify-center font-semibold rounded-full',
             'transition-colors duration-150 cursor-pointer select-none',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
             'disabled:cursor-not-allowed',
