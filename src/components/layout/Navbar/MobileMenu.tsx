@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import Button from '@/components/ui/Button'
+import CtaCita from '@/components/ui/CtaCita'
 
 const NAV_LINKS = [
   { href: '/',          label: 'Inicio' },
@@ -25,10 +25,10 @@ export default function MobileMenu({ open, pathname }: MobileMenuProps) {
       aria-label="Menú de navegación"
       aria-hidden={!open}
       className={clsx(
-        'md:hidden fixed inset-x-0 top-[calc(30px+76px)] bottom-0 z-40',
+        'md:hidden fixed inset-x-0 top-[calc(var(--spacing-banner)_+_var(--spacing-header-mobile))] bottom-0 z-40',
         'bg-background-surface border-t border-border flex flex-col',
         'transition-transform duration-200',
-        open ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+        open ? 'translate-y-0 visible' : '-translate-y-full invisible pointer-events-none'
       )}
     >
       <ul className="flex flex-col p-6 gap-1" role="list">
@@ -50,9 +50,7 @@ export default function MobileMenu({ open, pathname }: MobileMenuProps) {
         ))}
       </ul>
       <div className="px-6 pb-6">
-        <Button fullWidth asChild>
-          <Link href="/cita">Solicitar cita</Link>
-        </Button>
+        <CtaCita fullWidth />
       </div>
     </div>
   )

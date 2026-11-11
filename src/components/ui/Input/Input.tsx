@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useId } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { cn } from '@/lib/utils/cn'
 import { clsx } from 'clsx'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -35,18 +35,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
           }
           aria-invalid={hasError}
-          className={twMerge(
-            clsx(
-              'w-full h-9 px-gap-md rounded-input text-body text-text-primary bg-bg-default',
-              'border transition-colors duration-150 outline-none',
-              'placeholder:text-text-muted',
-              'focus:ring-2 focus:ring-brand-primary focus:border-brand-primary',
-              'disabled:opacity-50 disabled:cursor-not-allowed',
-              hasError
-                ? 'border-status-cancelled focus:ring-status-cancelled'
-                : 'border-border-default',
-              className
-            )
+          className={cn(
+            'w-full h-9 px-gap-md rounded-input text-body text-text-primary bg-bg-default',
+            'border transition-colors duration-150 outline-none',
+            'placeholder:text-text-muted',
+            'focus:ring-2 focus:ring-brand-primary focus:border-brand-primary',
+            'disabled:opacity-50 disabled:cursor-not-allowed',
+            hasError
+              ? 'border-status-cancelled focus:ring-status-cancelled'
+              : 'border-border-default',
+            className
           )}
           {...props}
         />

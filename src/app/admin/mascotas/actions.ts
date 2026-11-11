@@ -29,13 +29,12 @@ export async function guardarMascota(
   })
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0]?.message }
+    return { success: false, error: parsed.error.issues[0]?.message }
   }
 
   const result = await upsertMascota({
     ...parsed.data,
     foto_url: null,
-    slug: parsed.data.nombre.toLowerCase().replace(/\s+/g, '-'),
   })
 
   if (!result.success) return { success: false, error: 'No se pudo guardar.' }

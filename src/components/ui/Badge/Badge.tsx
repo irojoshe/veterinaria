@@ -1,5 +1,4 @@
-import { twMerge } from 'tailwind-merge'
-import { clsx } from 'clsx'
+import { cn } from '@/lib/utils/cn'
 
 export type BadgeVariant =
   | 'pending'
@@ -35,13 +34,11 @@ export default function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={twMerge(
-        clsx(
-          'inline-flex items-center px-gap-md py-gap-sm rounded-input',
-          'text-caption font-semibold leading-none whitespace-nowrap',
-          variantStyles[variant],
-          className
-        )
+      className={cn(
+        'inline-flex items-center px-gap-md py-gap-sm rounded-input',
+        'text-caption font-semibold leading-none whitespace-nowrap',
+        variantStyles[variant],
+        className
       )}
     >
       {children}

@@ -38,7 +38,7 @@ export async function crearCita(
   const parsed = citaSchema.safeParse(raw)
 
   if (!parsed.success) {
-    const first = parsed.error.errors[0]?.message ?? 'Revisa los campos del formulario.'
+    const first = parsed.error.issues[0]?.message ?? 'Revisa los campos del formulario.'
     return { success: false, error: first }
   }
 

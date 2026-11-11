@@ -1,5 +1,4 @@
-import { twMerge } from 'tailwind-merge'
-import { clsx } from 'clsx'
+import { cn } from '@/lib/utils/cn'
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Padding interno. Por defecto 'md' (24px) */
@@ -24,13 +23,11 @@ export default function Card({
 }: CardProps) {
   return (
     <div
-      className={twMerge(
-        clsx(
-          'bg-bg-default rounded-card shadow-card',
-          bordered && 'border border-border-default',
-          paddingStyles[padding],
-          className
-        )
+      className={cn(
+        'bg-bg-default rounded-card',
+        bordered && 'border border-border',
+        paddingStyles[padding],
+        className
       )}
       {...props}
     >

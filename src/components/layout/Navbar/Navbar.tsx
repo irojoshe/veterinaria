@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
-import { clsx } from 'clsx'
-import Button from '@/components/ui/Button'
+import { cn } from '@/lib/utils/cn'
+import CtaCita from '@/components/ui/CtaCita'
 import MobileMenu from './MobileMenu'
 
 const NAV_LINKS = [
@@ -27,44 +26,45 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
-    <header className="w-full bg-background/95 backdrop-blur border-b border-border sticky top-0 z-40">
-      <div className="w-full h-banner bg-accent-green-light flex items-center justify-center">
-        <span className="text-11 text-primary font-semibold">
+    <header className="w-full sticky top-0 z-40 bg-background">
+      <div className="w-full h-banner bg-accent-green-light flex items-center justify-center px-page-px">
+        <span className="hidden md:inline text-11 font-normal text-primary text-center">
           Un espacio para cuidar de quienes te acompañan · Clínica y datos de ejemplo
+        </span>
+        <span className="md:hidden text-11 font-normal text-primary text-center">
+          Huella Vet · Clínica de ejemplo
         </span>
       </div>
 
-      <nav aria-label="Navegación principal"
-           className="max-w-content mx-auto px-20 flex items-center justify-between
-                      h-header-desktop">
-        <NavBrand />
+      <nav aria-label="Navegación principal" className="w-full bg-background">
+        <div className="max-w-content mx-auto h-header-mobile md:h-header-desktop px-page-px md:px-page-px-lg flex items-center justify-between">
+          <NavBrand />
 
-        <ul className="hidden md:flex items-center gap-8" role="list">
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <NavLink href={link.href} active={pathname === link.href}>
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+          <div className="hidden md:flex items-center gap-[30px]">
+            <ul className="flex items-center gap-[30px]" role="list">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <NavLink href={link.href} active={pathname === link.href}>
+                    {link.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
 
-        <div className="hidden md:block">
-          <Button asChild size="md">
-            <Link href="/cita">Solicitar cita</Link>
-          </Button>
+            <CtaCita />
+          </div>
+
+          <button
+            className="md:hidden flex items-center justify-center w-10 h-10 -mr-2 rounded-md
+                       text-primary hover:bg-background-warm transition-colors"
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <HamburgerIcon open={menuOpen} />
+          </button>
         </div>
-
-        <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-md
-                     text-text-muted hover:bg-background-warm transition-colors"
-          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          <HamburgerIcon open={menuOpen} />
-        </button>
       </nav>
 
       <MobileMenu open={menuOpen} pathname={pathname} />
@@ -76,11 +76,11 @@ function NavBrand() {
   return (
     <Link href="/" className="flex items-center gap-2.5 focus-visible:outline-none
                                focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-      <span className="w-brand-icon h-brand-icon rounded-full bg-primary flex items-center
+      <span className="w-brand-icon h-brand-icon rounded-card bg-primary flex items-center
                        justify-center shrink-0" aria-hidden="true">
         <PawIcon className="text-background-surface w-5 h-5" />
       </span>
-      <span className="text-25 font-bold text-primary-dark tracking-tight leading-none">
+      <span className="text-25 font-bold text-primary-dark tracking-[-1px] leading-none">
         huella vet
       </span>
     </Link>
@@ -94,13 +94,13 @@ function NavLink({ href, active, children }: {
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={twMerge(clsx(
-        'text-14 transition-colors duration-150',
+      className={cn(
+        'text-14 leading-[1.45] transition-colors duration-150',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm',
         active
           ? 'font-bold text-primary'
-          : 'font-regular text-text-muted hover:text-text-main'
-      ))}
+          : 'font-normal text-text-muted hover:text-text-main'
+      )}
     >
       {children}
     </Link>

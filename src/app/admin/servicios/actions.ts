@@ -29,13 +29,12 @@ export async function guardarServicio(
   })
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0]?.message }
+    return { success: false, error: parsed.error.issues[0]?.message }
   }
 
   const result = await upsertServicio({
     ...parsed.data,
     imagen_url: null,
-    slug: parsed.data.nombre.toLowerCase().replace(/\s+/g, '-'),
   })
 
   if (!result.success) return { success: false, error: 'No se pudo guardar el servicio.' }
