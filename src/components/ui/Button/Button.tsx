@@ -1,8 +1,5 @@
-'use client'
-
 import { forwardRef, isValidElement, cloneElement } from 'react'
-import { twMerge } from 'tailwind-merge'
-import { clsx } from 'clsx'
+import { cn } from '@/lib/utils/cn'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -21,7 +18,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     'bg-brand-primary text-bg-default hover:bg-brand-secondary active:bg-brand-secondary ' +
     'disabled:bg-border-light disabled:text-text-muted',
   secondary:
-    'bg-bg-default text-brand-primary border border-border-default hover:bg-bg-secondary ' +
+    'bg-bg-default text-brand-primary border border-border hover:bg-bg-secondary ' +
     'active:bg-border-light disabled:opacity-50',
   outline:
     'bg-transparent text-brand-primary border border-brand-primary hover:bg-bg-secondary ' +
@@ -34,7 +31,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 const sizeStyles: Record<ButtonSize, string> = {
   sm: 'h-9 px-4 text-13 gap-1.5',
   md: 'h-btn px-5 text-14 gap-2',
-  lg: 'h-14 px-6 text-15 gap-2',
+  lg: 'h-btn px-5 text-14 gap-2.5',
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -54,23 +51,21 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const isDisabled = disabled || loading
 
-    const computedClass = twMerge(
-      clsx(
-        'inline-flex items-center justify-center font-semibold rounded-input',
-        'transition-colors duration-150 cursor-pointer select-none',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-        'disabled:cursor-not-allowed',
-        variantStyles[variant],
-        sizeStyles[size],
-        fullWidth && 'w-full',
-        className
-      )
+    const computedClass = cn(
+      'inline-flex items-center justify-center font-semibold rounded-input',
+      'transition-colors duration-150 cursor-pointer select-none',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+      'disabled:cursor-not-allowed',
+      variantStyles[variant],
+      sizeStyles[size],
+      fullWidth && 'w-full',
+      className
     )
 
     // Modo asChild: clona el hijo y le pasa las clases
     if (asChild && isValidElement(children)) {
       return cloneElement(children as React.ReactElement<{ className?: string }>, {
-        className: twMerge((children as React.ReactElement<{ className?: string }>).props.className, computedClass),
+        className: cn((children as React.ReactElement<{ className?: string }>).props.className, computedClass),
       })
     }
 
@@ -78,18 +73,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={isDisabled}
-        className={twMerge(
-          clsx(
-            'inline-flex items-center justify-center font-semibold rounded-input',
-            'transition-colors duration-150 cursor-pointer select-none',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed',
-            variantStyles[variant],
-            sizeStyles[size],
-            fullWidth && 'w-full',
-            className
-          )
-        )}
+        className={computedClass}
         {...props}
       >
         {loading && (

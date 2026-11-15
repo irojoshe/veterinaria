@@ -6,7 +6,7 @@ export interface Servicio {
   duracion_minutos: number
   imagen_url: string | null
   publicado: boolean
-  slug: string
+  slug?: string
 }
 
 export interface Negocio {
@@ -27,7 +27,7 @@ export interface Mascota {
   especie: string
   raza: string
   foto_url: string | null
-  slug: string
+  slug?: string
   publica: boolean
   propietario?: string
 }

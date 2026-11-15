@@ -1,35 +1,125 @@
 @import "tailwindcss";
 
+/*
+ * Única fuente de verdad de estilos (Tailwind v4).
+ * Valores extraídos del Figma "veterinaria" (Uh2wHWugma4DwN8GIkJNbw).
+ * NOTA: Tailwind v4 NO lee tailwind.config.ts; todo token vive aquí.
+ * El diseño es plano: bordes de 1px, sin sombras en tarjetas.
+ */
 @theme {
-  --font-sans: "Arial", "Helvetica Neue", sans-serif;
-  --font-display: "Georgia", "Times New Roman", serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
 
-  --color-background: #f6f4ef;
-  --color-background-surface: #fffdf8;
-  --color-background-warm: #ebe5da;
-  --color-primary: #315d4e;
-  --color-primary-dark: #24493d;
-  --color-primary-deeper: #18372f;
-  --color-accent-green-light: #dce8df;
-  --color-text-main: #26332e;
-  --color-text-heading: #18372f;
-  --color-text-muted: #68736d;
-  --color-border: #d9d8cf;
-  --color-border-muted: #abb9b0;
-  --color-border-dark: #426255;
-  --color-status-cancelled: #a84f4f;
+  /* Marca */
+  --color-brand-primary: #205c50;
+  --color-brand-secondary: #173f38;
+  --color-brand-dark: #173f38;
+  --color-brand-light: #e9f0e8;
+  --color-brand-neutral: #64736b;
+  --color-brand-active: #315a4f;       /* ítem activo del sidebar admin */
+  --color-primary-nav: #315a4f;
 
+  /* Alias heredados (mismo valor que la marca) */
+  --color-primary: #205c50;
+  --color-primary-dark: #173f38;
+  --color-primary-deeper: #173f38;
+
+  /* Superficies */
+  --color-background: #f7f5ef;
+  --color-background-surface: #ffffff;
+  --color-background-warm: #eee8dc;
+  --color-accent-green-light: #e9f0e8;
+  --color-bg-default: #ffffff;
+  --color-bg-secondary: #f7f5ef;
+  --color-bg-tertiary: #eee8dc;
+  --color-bg-success: #e9f0e8;
+  --color-bg-warning: #faf0da;
+  --color-bg-error: #f9ebe7;
+  --color-bg-info: #eaf1f5;
+  --color-bg-warm: #f5efe7;
+
+  /* Texto */
+  --color-text-main: #243f39;
+  --color-text-heading: #173f38;
+  --color-text-primary: #173f38;
+  --color-text-secondary: #64736b;
+  --color-text-muted: #64736b;
+  --color-text-tertiary: #a9c5b7;
+  --color-text-on-dark: #c5d4c8;
+
+  /* Bordes */
+  --color-border: #dde4dc;
+  --color-border-default: #dde4dc;
+  --color-border-light: #dde4dc;
+  --color-border-muted: #c5d4c8;
+  --color-border-dark: #a9c5b7;
+  --color-border-on-dark: #45685f;
+
+  /* Estados de cita (texto/punto y fondo de badge) */
+  --color-status-pending: #8d5d17;
+  --color-status-confirmed: #205c50;
+  --color-status-attended: #416575;
+  --color-status-cancelled: #a34539;
+  --color-status-pending-bg: #faf0da;
+  --color-status-confirmed-bg: #e9f0e8;
+  --color-status-attended-bg: #eaf1f5;
+  --color-status-cancelled-bg: #f9ebe7;
+
+  /* Radios */
+  --radius-input: 8px;      /* botones, inputs, avisos */
+  --radius-card: 14px;      /* tarjetas, fotos, emblema */
+  --radius-hero: 120px;     /* foto del hero (desktop) */
+  --radius-pill: 100px;     /* badges de estado */
+
+  /* Sombra: solo para modales flotantes */
+  --shadow-panel: 0 12px 35px rgba(24, 55, 47, 0.07);
+
+  /* Espaciado y medidas */
+  --spacing-card: 24px;
+  --spacing-section: 40px;
+  --spacing-gap-lg: 24px;
+  --spacing-gap-md: 14px;
+  --spacing-gap-sm: 8px;
+  --spacing-page-px: 24px;
+  --spacing-page-px-md: 48px;
+  --spacing-page-px-lg: 80px;
+  --spacing-page-h: 40px;
+  --spacing-page-h-lg: 64px;
+  --spacing-page-h-xl: 80px;
+  --spacing-page-h-xxl: 80px;
+  --spacing-page: 1280px;
   --spacing-content: 1440px;
-  --spacing-header-desktop: 84px;
-  --spacing-banner: 34px;
+  --spacing-header-desktop: 96px;
+  --spacing-header-mobile: 76px;
+  --spacing-banner: 30px;
   --spacing-btn: 48px;
   --spacing-brand-icon: 38px;
+  --spacing-icon-sm: 20px;
+  --spacing-sidebar: 228px;
+  --spacing-admin-header: 80px;
   --spacing-sidebar-min: 220px;
-  --spacing-hero-md: 52%;
+  --spacing-hero-md: 620px;
   --spacing-contact-md: 42%;
-  --spacing-card-image-sm: 210px;
+  --spacing-panel-md: 480px;
+  --spacing-panel-lg: 640px;
+  --spacing-modal-max: 90vh;
+  --spacing-card-image-sm: 215px;
   --spacing-card-image-xl: 540px;
-  --spacing-hero-contact: 360px;
+  --spacing-hero-contact: 230px;
+  --spacing-hero-photo-sm: 330px;
+
+  /* Tipografía (px exactos del Figma; line-height y tracking incluidos) */
+  --text-h1: 52px;  --text-h1--line-height: 1.1;  --text-h1--letter-spacing: -2px; --text-h1--font-weight: 600;
+  --text-h2: 32px;  --text-h2--line-height: 1.1;  --text-h2--letter-spacing: -1px; --text-h2--font-weight: 600;
+  --text-h3: 24px;  --text-h3--line-height: 1.45; --text-h3--font-weight: 600;
+  --text-h4: 20px;  --text-h4--line-height: 1.45; --text-h4--font-weight: 600;
+  --text-h5: 18px;  --text-h5--line-height: 1.45; --text-h5--font-weight: 600;
+  --text-label: 14px;   --text-label--line-height: 1.45;   --text-label--font-weight: 600;
+  --text-body: 15px;    --text-body--line-height: 1.45;
+  --text-caption: 12px; --text-caption--line-height: 1.45; --text-caption--font-weight: 600;
+  --text-eyebrow: 12px; --text-eyebrow--line-height: 1.45; --text-eyebrow--letter-spacing: 1.8px; --text-eyebrow--font-weight: 700;
+  --text-lead: 18px;    --text-lead--line-height: 1.45;
+  --text-small: 12px;   --text-small--line-height: 1.45;
+  --text-tiny: 11px;    --text-tiny--line-height: 1.45;
 
   --text-11: 0.6875rem;
   --text-12: 0.75rem;
@@ -39,6 +129,7 @@
   --text-16: 1rem;
   --text-17: 1.0625rem;
   --text-18: 1.125rem;
+  --text-19: 1.1875rem;
   --text-22: 1.375rem;
   --text-25: 1.5625rem;
   --text-26: 1.625rem;
@@ -49,12 +140,7 @@
 @layer base {
   :root { color-scheme: light; }
   html { scroll-behavior: smooth; }
-  body {
-    @apply bg-background text-text-main font-sans antialiased;
-    letter-spacing: -0.01em;
-  }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.035em; }
-  *, *::before, *::after { box-sizing: border-box; }
+  body { @apply bg-background text-text-main font-sans antialiased; }
 }
 
-::selection { background: #b9d2c1; color: #18372f; }
+::selection { background: #c5d4c8; color: #173f38; }

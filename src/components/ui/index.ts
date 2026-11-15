@@ -12,3 +12,6 @@ export type { BadgeProps, BadgeVariant } from './Badge'
 
 export { default as Modal } from './Modal'
 export type { ModalProps } from './Modal'
+
+export { default as CtaCita } from './CtaCita'
+export type { CtaCitaProps } from './CtaCita'

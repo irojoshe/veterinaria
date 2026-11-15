@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { twMerge } from 'tailwind-merge'
+import { cn } from '@/lib/utils/cn'
 import { clsx } from 'clsx'
 
 export interface ModalProps {
@@ -65,13 +65,11 @@ export default function Modal({
 
       {/* Panel */}
       <div
-        className={twMerge(
-          clsx(
-            'relative z-10 w-full bg-background-surface rounded-lg shadow-panel',
-            'flex flex-col max-h-modal-max',
-            sizeStyles[size],
-            className
-          )
+        className={cn(
+          'relative z-10 w-full bg-background-surface rounded-lg shadow-panel',
+          'flex flex-col max-h-modal-max',
+          sizeStyles[size],
+          className
         )}
       >
         {/* Header */}
