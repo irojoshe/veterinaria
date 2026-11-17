@@ -2,15 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
-import type { Servicio } from '@/lib/types'
+import type { ServicioPublico } from '@/lib/types'
 
-const IMAGENES: Record<string, string> = {
-  'consulta-general': '/images/home/servicio-consulta.png',
-  vacunacion: '/images/home/servicio-vacunacion.jpg',
-  'medicina-preventiva': '/images/home/servicio-preventiva.jpg',
-}
+const IMAGEN_PLACEHOLDER = '/images/placeholder-servicio.jpg'
 
-export default function ServiciosDestacados({ servicios }: { servicios: Servicio[] }) {
+export default function ServiciosDestacados({ servicios }: { servicios: ServicioPublico[] }) {
   const destacados = servicios.slice(0, 3)
 
   return (
@@ -52,25 +48,21 @@ export default function ServiciosDestacados({ servicios }: { servicios: Servicio
   )
 }
 
-function ServicioCard({ servicio }: { servicio: Servicio }) {
-  const imagen = servicio.imagen_url ?? (servicio.slug ? IMAGENES[servicio.slug] : undefined)
+function ServicioCard({ servicio }: { servicio: ServicioPublico }) {
+  const imagen = servicio.imagen_url ?? IMAGEN_PLACEHOLDER
 
   return (
     <Card padding="none" className="flex flex-col overflow-hidden">
       {/* Imagen */}
-      {imagen ? (
-        <div className="relative h-card-image-sm w-full shrink-0 overflow-hidden bg-bg-secondary">
-          <Image
-            src={imagen}
-            alt={servicio.nombre}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 410px"
-          />
-        </div>
-      ) : (
-        <div className="h-card-image-sm w-full shrink-0 bg-bg-secondary" aria-hidden="true" />
-      )}
+      <div className="relative h-card-image-sm w-full shrink-0 overflow-hidden bg-bg-secondary">
+        <Image
+          src={imagen}
+          alt={servicio.nombre}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 410px"
+        />
+      </div>
 
       <div className="flex flex-col gap-gap-md p-card">
         <h3 className="text-22 font-semibold text-text-main">{servicio.nombre}</h3>

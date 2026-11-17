@@ -10,9 +10,9 @@ import SeccionPropietario from './SeccionPropietario'
 import SeccionMascota from './SeccionMascota'
 import SeccionPreferencias from './SeccionPreferencias'
 import ResumenCita from './ResumenCita'
-import type { Servicio } from '@/lib/types'
+import type { ServicioPublico } from '@/lib/types'
 
-interface Props { servicios: Servicio[] }
+interface Props { servicios: ServicioPublico[] }
 
 export default function CitaForm({ servicios }: Props) {
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(

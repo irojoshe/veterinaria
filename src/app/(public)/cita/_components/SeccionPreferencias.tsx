@@ -3,12 +3,12 @@ import { forwardRef } from 'react'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import type { CitaFormValues } from '@/lib/validations/cita'
-import type { Servicio } from '@/lib/types'
+import type { ServicioPublico } from '@/lib/types'
 
 interface Props {
   register: UseFormRegister<CitaFormValues>
   errors: FieldErrors<CitaFormValues>
-  servicios: Servicio[]
+  servicios: ServicioPublico[]
 }
 
 const HORAS_ORIENTATIVAS = ['10:00', '10:30', '11:00', '11:30', '12:00']
