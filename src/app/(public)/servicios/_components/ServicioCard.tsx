@@ -1,24 +1,22 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import Card from '@/components/ui/Card'
-import type { Servicio } from '@/lib/types'
+import type { ServicioPublico } from '@/lib/types'
 
-export default function ServicioCard({ servicio }: { servicio: Servicio }) {
+const IMAGEN_PLACEHOLDER = '/images/placeholder-servicio.jpg'
+
+export default function ServicioCard({ servicio }: { servicio: ServicioPublico }) {
   return (
     <Card padding="none" className="flex flex-col overflow-hidden">
       {/* Imagen */}
       <div className="relative h-card-image-sm w-full bg-background-warm shrink-0">
-        {servicio.imagen_url ? (
-          <Image
-            src={servicio.imagen_url}
-            alt={`Imagen de ${servicio.nombre}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
-        ) : (
-          <div className="w-full h-full bg-background-warm" aria-hidden="true" />
-        )}
+        <Image
+          src={servicio.imagen_url ?? IMAGEN_PLACEHOLDER}
+          alt={`Imagen de ${servicio.nombre}`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
       </div>
 
       {/* Info */}

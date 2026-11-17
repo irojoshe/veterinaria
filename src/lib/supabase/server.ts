@@ -45,3 +45,26 @@ export async function createSupabaseServerClient() {
     }
   )
 }
+
+/**
+ * Cliente de Supabase para lecturas públicas cacheables.
+ *
+ * No usa cookies a propósito: dentro de `unstable_cache` cualquier lectura de
+ * cookies o headers lanza un error en Next.js 16
+ * (node_modules/next/dist/server/request/headers.js:45-46).
+ *
+ * Solo usar para datos públicos que no dependan de la sesión del usuario.
+ * Ver docs/patterns/data-fetching.md.
+ */
+export function createSupabasePublicServerClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => [],
+        setAll: () => {},
+      },
+    }
+  )
+}

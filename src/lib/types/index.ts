@@ -9,6 +9,13 @@ export interface Servicio {
   slug?: string
 }
 
+/**
+ * Servicio del catálogo público: exactamente las columnas que consume la UI
+ * pública. `publicado` no se selecciona porque solo se usa como filtro.
+ * Ver docs/patterns/data-fetching.md.
+ */
+export type ServicioPublico = Omit<Servicio, 'publicado'>
+
 export interface Negocio {
   nombre: string
   descripcion: string
