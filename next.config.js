@@ -6,6 +6,10 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'loremflickr.com' },
       { protocol: 'https', hostname: '**.loremflickr.com' },
+      { protocol: 'https', hostname: 'www.veterinariadogtor.com' },
+      { protocol: 'https', hostname: 'indyvetcare.com' },
+      { protocol: 'https', hostname: 'cdn.whole-dog-journal.com' },
+      { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
     ],
   },
 }
