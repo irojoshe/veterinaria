@@ -10,6 +10,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'indyvetcare.com' },
       { protocol: 'https', hostname: 'cdn.whole-dog-journal.com' },
       { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
+      // Google rota entre tbn0..tbn3 segun el resultado; el comodin cubre todos.
+      { protocol: 'https', hostname: '**.gstatic.com' },
     ],
   },
 }
