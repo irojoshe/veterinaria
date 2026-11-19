@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+// El panel lee la sesión con cookies: siempre se renderiza en servidor.
+export const dynamic = 'force-dynamic'
+
 export default async function AdminLayout({
   children,
 }: {

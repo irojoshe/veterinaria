@@ -53,6 +53,46 @@ export const getServiciosPublicos = unstable_cache(
 )
 
 /**
+ * Detalle público de un servicio por su slug.
+ *
+ * Lectura cacheada con `unstable_cache`: cada slug es una entrada propia y el
+ * contenido es público y estable. Usa el cliente sin cookies porque dentro de
+ * un scope de cache Next.js 16 lanza un error al leer cookies o headers.
+ */
+export const getServicioBySlug = unstable_cache(
+  async (slug: string): Promise<ServicioPublico | null> => {
+    try {
+      const supabase = createSupabasePublicServerClient()
+
+      const { data, error } = await supabase
+        .from('servicios')
+        .select(COLUMNAS_SERVICIO)
+        .eq('slug', slug)
+        .eq('publicado', true)
+        .maybeSingle()
+
+      if (error) {
+        console.error(
+          '[servicios] Error al leer el servicio:',
+          error.message,
+        )
+        return null
+      }
+
+      return (data ?? null) as ServicioPublico | null
+    } catch (error) {
+      console.error(
+        '[servicios] Error inesperado al leer el servicio:',
+        error,
+      )
+      return null
+    }
+  },
+  ['servicio-publico'],
+  { revalidate: 300, tags: ['servicios'] },
+)
+
+/**
  * Servicios para el panel de administración.
  *
  * Sin caché: el administrador necesita ver los cambios al instante.

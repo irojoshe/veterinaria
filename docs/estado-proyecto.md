@@ -28,6 +28,7 @@ Punto de control para retomar el trabajo sin perder contexto. **Actualizado: 17 
 - **Caché solo donde corresponde**: el catálogo público usa `unstable_cache` (revalidate 5 min); el panel de administración lee en cada request.
 - **Columnas exactas**: nada de `SELECT *`; cada lectura pide las columnas que su UI consume.
 - **Imágenes de servicios**: salen de la columna `imagen_url` de la base (host externo `loremflickr.com`, permitido en `next.config.js`), con `/images/placeholder-servicio.jpg` como fallback.
+- **Hosts externos permitidos**: todo dominio de imagen externa debe estar en `images.remotePatterns`; la regla y la lista de hosts viven en `docs/patterns/imagenes-externas.md`.
 
 ## Pendientes
 

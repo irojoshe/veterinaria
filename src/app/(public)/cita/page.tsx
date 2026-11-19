@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import Card from '@/components/ui/Card'
 import { getServiciosPublicos } from '@/lib/services/servicios'
 import CitaForm from './_components/CitaForm'
@@ -42,7 +43,17 @@ export default async function CitaPage() {
       </Card>
 
       {/* Formulario */}
-      <CitaForm servicios={servicios} />
+      <Suspense fallback={<CargandoFormulario />}>
+        <CitaForm servicios={servicios} />
+      </Suspense>
+    </div>
+  )
+}
+
+function CargandoFormulario() {
+  return (
+    <div className="flex flex-col gap-6" aria-busy="true" aria-live="polite">
+      <p className="text-13 text-text-muted">Cargando el formulario…</p>
     </div>
   )
 }
