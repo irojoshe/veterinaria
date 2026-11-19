@@ -94,8 +94,9 @@ export default function MascotaCard({
           <div className="mt-auto pt-2">
             <Button
               variant="primary"
-              size="md"
+              size="lg"
               fullWidth
+              className="text-16 md:text-14"
               onClick={() => setOpen(true)}
             >
               Quiero conocerlo
@@ -140,12 +141,12 @@ export default function MascotaCard({
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button asChild variant="primary" size="lg" className="flex-1">
+            <Button asChild variant="primary" size="lg" className="flex-1 h-12 md:h-auto text-16 md:text-14">
               <Link href="/cita">
                 <span>Agendar cita</span>
               </Link>
             </Button>
-            <Button asChild variant="secondary" size="lg" className="flex-1">
+            <Button asChild variant="secondary" size="lg" className="flex-1 h-12 md:h-auto text-16 md:text-14">
               <a
                 href={`https://wa.me/${tel}?text=${encodeURIComponent(
                   `Hola, me interesa conocer a ${mascota.nombre} (${mascota.especie} · ${mascota.raza}).`,

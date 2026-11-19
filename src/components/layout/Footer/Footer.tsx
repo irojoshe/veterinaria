@@ -5,11 +5,11 @@ const FOOTER_LINKS_LINE_1 = [
   { href: '/mascotas',  label: 'Mascotas' },
   { href: '/cita',      label: 'Cita' },
   { href: '/contacto',  label: 'Contacto' },
+  { href: '/privacidad', label: 'Privacidad' },
 ]
 
 const FOOTER_LINKS_LINE_2 = [
-  { href: '/privacidad', label: 'Privacidad' },
-  { href: '/admin',      label: 'Acceso de administración' },
+  { href: '/admin', label: 'Acceso de administración' },
 ]
 
 export default function Footer() {
