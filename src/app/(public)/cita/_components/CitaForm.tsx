@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { citaSchema, type CitaFormValues } from '@/lib/validations/cita'
@@ -12,13 +13,23 @@ import CitaEnvio from './CitaEnvio'
 import CitaLateral from './CitaLateral'
 import type { ServicioPublico } from '@/lib/types'
 
-interface Props { servicios: ServicioPublico[] }
+interface Props {
+  servicios: ServicioPublico[]
+}
 
 export default function CitaForm({ servicios }: Props) {
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(
     crearCita,
     null
   )
+
+  // Preselección desde la URL (?servicio=slug). Se lee en el cliente para que
+  // la página siga siendo estática.
+  const searchParams = useSearchParams()
+  const slug = searchParams.get('servicio')
+  const servicioInicial = servicios.some((s) => s.slug === slug)
+    ? slug ?? undefined
+    : undefined
 
   const {
     register,
@@ -27,7 +38,11 @@ export default function CitaForm({ servicios }: Props) {
     formState: { errors },
   } = useForm<CitaFormValues>({
     resolver: zodResolver(citaSchema),
-    defaultValues: { _hp: '', acepta_privacidad: false },
+    defaultValues: {
+      _hp: '',
+      acepta_privacidad: false,
+      ...(servicioInicial ? { servicio: servicioInicial } : {}),
+    },
   })
 
   // Observa los valores para el resumen en tiempo real

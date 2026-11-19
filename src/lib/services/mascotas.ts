@@ -1,4 +1,53 @@
-import type { Mascota } from '@/lib/types'
+import { unstable_cache } from 'next/cache'
+import { createSupabasePublicServerClient } from '@/lib/supabase/server'
+import type { Mascota, MascotaPublica } from '@/lib/types'
+
+/**
+ * Columnas públicas de la tabla `mascotas`: exactamente las que consume la
+ * UI del catálogo. Ni una más (SELECT *) ni una menos.
+ * Ver docs/patterns/data-fetching.md.
+ */
+const COLUMNAS_MASCOTA =
+  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url'
+
+/**
+ * Mascotas publicadas para el catálogo público.
+ *
+ * Lectura cacheada con `unstable_cache`: es información pública y estable.
+ * Usa el cliente sin cookies porque dentro de un scope de cache Next.js 16
+ * lanza un error al leer cookies o headers.
+ */
+export const getMascotasPublicas = unstable_cache(
+  async (): Promise<MascotaPublica[]> => {
+    try {
+      const supabase = createSupabasePublicServerClient()
+
+      const { data, error } = await supabase
+        .from('mascotas')
+        .select(COLUMNAS_MASCOTA)
+        .eq('publicado', true)
+        .order('nombre')
+
+      if (error) {
+        console.error(
+          '[mascotas] Error al leer mascotas publicadas:',
+          error.message,
+        )
+        return []
+      }
+
+      return (data ?? []) as MascotaPublica[]
+    } catch (error) {
+      console.error(
+        '[mascotas] Error inesperado al leer mascotas publicadas:',
+        error,
+      )
+      return []
+    }
+  },
+  ['mascotas-publicas'],
+  { revalidate: 300, tags: ['mascotas'] },
+)
 
 const MASCOTAS_MOCK: Mascota[] = [
   { id: '1', nombre: 'Luna',  especie: 'Perro', raza: 'Golden retriever', foto_url: null, slug: 'luna',  publica: true,  propietario: 'Lucía Torres' },
