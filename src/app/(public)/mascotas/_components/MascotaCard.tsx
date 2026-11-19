@@ -1,5 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import type { MascotaPublica } from '@/lib/types'
+
+const PLACEHOLDER = '/images/placeholder-mascota.jpg'
 
 /**
  * Calcula la edad en años a partir de la fecha de nacimiento.
@@ -25,6 +30,7 @@ function calcularEdad(fechaNacimiento: string | null): string | null {
 }
 
 export default function MascotaCard({ mascota }: { mascota: MascotaPublica }) {
+  const [src, setSrc] = useState(mascota.foto_url ?? PLACEHOLDER)
   const edad = calcularEdad(mascota.fecha_nacimiento)
 
   return (
@@ -32,11 +38,14 @@ export default function MascotaCard({ mascota }: { mascota: MascotaPublica }) {
       {/* Foto */}
       <div className="relative w-full h-48 overflow-hidden bg-bg-warm">
         <Image
-          src={mascota.foto_url ?? '/images/placeholder-mascota.jpg'}
+          src={src}
           alt={`Foto de ${mascota.nombre}`}
           fill
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          onError={() => {
+            if (src !== PLACEHOLDER) setSrc(PLACEHOLDER)
+          }}
         />
       </div>
 
