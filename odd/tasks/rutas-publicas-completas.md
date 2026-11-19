@@ -79,23 +79,38 @@ signifique algo.
 ## Progreso
 
 ### T1 · Detalle del servicio
-- [ ] Pendiente
+- [x] `getServicioBySlug` con cliente público + caché (tag `servicios`).
+- [x] `/servicios/[slug]` con `generateStaticParams` (7 slugs prerenderizados).
+- [x] `/cita?servicio=slug` preselecciona en cliente (la página sigue estática).
 
 ### T2 · Página de mascotas
-- [ ] Pendiente
+- [x] `getMascotasPublicas` con cliente público + caché (tag `mascotas`).
+- [x] `/mascotas` + `MascotaCard` con fallback `/images/placeholder-mascota.jpg`.
+- [x] Script SQL en `docs/sql/seed-mascotas.sql` (la base ya traía 8 mascotas reales).
 
 ### T3 · Contacto y privacidad
-- [ ] Pendiente
+- [x] `getNegocio()` lee la tabla `negocio` con defaults para los campos NULL.
+- [x] `/contacto` con dirección, teléfono, email, whatsapp, horario y mapa.
+- [x] `/privacidad` con política estructurada (8 secciones).
 
 ### T4 · Fixes finales
-- [ ] Pendiente
+- [x] `InvitacionFinalSection`: un solo `<h2>` con dos `<span>` responsivas.
+- [x] `admin/layout.tsx`: `dynamic = 'force-dynamic'` (cero ruido en el build).
 
 ## Ruta de ejecución
 Delegated direct: un writer para los 4 tasks (toca 2+ archivos no triviales).
 Verificación en el parent (types + build + auditoría de links).
 
 ## Commit de la unidad
-- [ ] Pendiente
+- `b416b2e` — `feat(public): agrega detalle de servicio, mascotas, contacto y privacidad`
+
+## Verificación
+- `npx tsc --noEmit`: exit 0.
+- `npm run build`: OK, 16 rutas. `/`, `/cita`, `/servicios`, `/contacto`, `/mascotas`,
+  `/privacidad` estáticas (5m) + 7 páginas de servicio prerenderizadas (SSG).
+- Sin `Dynamic server usage` en los logs del build.
+- Auditoría de links sobre el HTML prerenderizado: 0 rutas 404.
+- `/mascotas` renderiza las 8 mascotas reales; `/contacto` muestra dirección y horarios.
 
 ## Próximo paso
-Implementar T1 → T4 con el writer delegado y verificar.
+Abrir el PR: https://github.com/irojoshe/veterinaria/pull/new/feat/home-servicios-supabase
