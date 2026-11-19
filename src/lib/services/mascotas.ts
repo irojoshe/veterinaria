@@ -8,7 +8,7 @@ import type { Mascota, MascotaPublica } from '@/lib/types'
  * Ver docs/patterns/data-fetching.md.
  */
 const COLUMNAS_MASCOTA =
-  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url'
+  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, precio, historia, estado_adopcion'
 
 /**
  * Mascotas publicadas para el catálogo público.
