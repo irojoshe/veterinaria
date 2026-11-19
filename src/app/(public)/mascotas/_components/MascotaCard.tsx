@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import type { MascotaPublica } from '@/lib/types'
@@ -140,16 +139,11 @@ export default function MascotaCard({
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button asChild variant="primary" size="lg" className="flex-1 h-12 md:h-auto text-16 md:text-14">
-              <Link href="/cita">
-                <span>Agendar cita</span>
-              </Link>
-            </Button>
-            <Button asChild variant="secondary" size="lg" className="flex-1 h-12 md:h-auto text-16 md:text-14">
+          <div className="flex justify-center pt-2">
+            <Button asChild variant="primary" size="lg" className="h-14 md:h-12 w-full sm:w-auto sm:min-w-[260px] text-16 md:text-14">
               <a
                 href={`https://wa.me/${tel}?text=${encodeURIComponent(
-                  `Hola, me interesa conocer a ${mascota.nombre} (${mascota.especie} · ${mascota.raza}).`,
+                  `Hola, me interesa conocer a ${mascota.nombre} (${mascota.especie} · ${mascota.raza}). Quisiera mas informacion sobre la adopcion.`,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
