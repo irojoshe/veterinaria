@@ -2,23 +2,12 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import type { MascotaPublica } from '@/lib/types'
+import { calcularEdadExacta } from '@/lib/utils/date'
+import MascotaModal from './MascotaModal'
 
 const PLACEHOLDER = '/images/placeholder-mascota.jpg'
-
-function calcularEdad(fechaNacimiento: string | null): string | null {
-  if (!fechaNacimiento) return null
-  const nacimiento = new Date(fechaNacimiento)
-  if (Number.isNaN(nacimiento.getTime())) return null
-  const hoy = new Date()
-  let años = hoy.getFullYear() - nacimiento.getFullYear()
-  const mes = hoy.getMonth() - nacimiento.getMonth()
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) años -= 1
-  if (años < 0) return null
-  return años === 1 ? '1 año' : `${años} años`
-}
 
 function formatearPrecio(precio: number): string {
   return new Intl.NumberFormat('es-ES', {
@@ -27,6 +16,19 @@ function formatearPrecio(precio: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(precio)
+}
+
+function badgeStyles(estado: string): string {
+  switch (estado) {
+    case 'disponible':
+      return 'bg-green-100 text-green-800'
+    case 'reservado':
+      return 'bg-amber-100 text-amber-800'
+    case 'vendido':
+      return 'bg-red-100 text-red-800'
+    default:
+      return 'bg-gray-100 text-gray-800'
+  }
 }
 
 export default function MascotaCard({
@@ -38,8 +40,20 @@ export default function MascotaCard({
 }) {
   const [src, setSrc] = useState(mascota.foto_url ?? PLACEHOLDER)
   const [open, setOpen] = useState(false)
-  const edad = calcularEdad(mascota.fecha_nacimiento)
-  const tel = (whatsapp ?? '+34900123456').replace(/\D/g, '')
+  const edad = calcularEdadExacta(mascota.fecha_nacimiento)
+  const disponible = mascota.estado_adopcion === 'disponible'
+  const reservado = mascota.estado_adopcion === 'reservado'
+  const vendido = mascota.estado_adopcion === 'vendido'
+
+  const ctaLabel = disponible
+    ? 'Ver ficha y comprar'
+    : reservado
+      ? 'Reservado'
+      : vendido
+        ? 'Vendido'
+        : mascota.estado_adopcion
+
+  const ctaDisabled = reservado || vendido
 
   return (
     <>
@@ -58,7 +72,12 @@ export default function MascotaCard({
           />
           {/* Badge de estado */}
           {mascota.estado_adopcion && (
-            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-background-surface/90 backdrop-blur text-12 font-semibold text-text-main">
+            <span
+              className={
+                'absolute top-3 left-3 px-2.5 py-1 rounded-full text-12 font-semibold ' +
+                badgeStyles(mascota.estado_adopcion)
+              }
+            >
               {mascota.estado_adopcion}
             </span>
           )}
@@ -95,65 +114,28 @@ export default function MascotaCard({
               variant="primary"
               size="lg"
               fullWidth
-              className="text-16 md:text-14"
-              onClick={() => setOpen(true)}
+              disabled={ctaDisabled}
+              onClick={() => {
+                if (!ctaDisabled) setOpen(true)
+              }}
+              className={
+                ctaDisabled
+                  ? 'opacity-50 cursor-not-allowed'
+                  : ''
+              }
             >
-              Quiero conocerlo
+              {ctaLabel}
             </Button>
           </div>
         </div>
       </article>
 
-      <Modal
+      <MascotaModal
+        mascota={mascota}
         open={open}
         onClose={() => setOpen(false)}
-        title={mascota.nombre}
-        description={[mascota.especie, mascota.raza].filter(Boolean).join(' · ')}
-        size="md"
-      >
-        <div className="flex flex-col gap-5">
-          <div className="relative w-full h-56 overflow-hidden rounded-card bg-bg-warm">
-            <Image
-              src={src}
-              alt={`Foto de ${mascota.nombre}`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 512px"
-            />
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-24 font-bold text-brand-primary">
-              {formatearPrecio(mascota.precio)}
-            </p>
-            {mascota.estado_adopcion && (
-              <span className="px-2.5 py-1 rounded-full bg-brand-light text-12 font-semibold text-brand-primary">
-                {mascota.estado_adopcion}
-              </span>
-            )}
-          </div>
-
-          {mascota.historia && (
-            <p className="text-15 text-text-secondary leading-relaxed whitespace-pre-line">
-              {mascota.historia}
-            </p>
-          )}
-
-          <div className="flex justify-center pt-2">
-            <Button asChild variant="primary" size="lg" className="h-14 md:h-12 w-full sm:w-auto sm:min-w-[260px] text-16 md:text-14">
-              <a
-                href={`https://wa.me/${tel}?text=${encodeURIComponent(
-                  `Hola, me interesa conocer a ${mascota.nombre} (${mascota.especie} · ${mascota.raza}). Quisiera mas informacion sobre la adopcion.`,
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Contactar por WhatsApp
-              </a>
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        whatsapp={whatsapp}
+      />
     </>
   )
 }
