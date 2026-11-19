@@ -3,11 +3,10 @@ import { createServerClient } from '@supabase/ssr'
 
 /**
  * Proxy para Next.js App Router (Next.js 16+).
- * Refresca la sesión de Supabase en cada request.
- * Esto mantiene la autenticación activa aunque el token expire.
  *
- * Implementación siguiendo la documentación oficial de Supabase.
- * El try/catch en setAll maneja casos donde no se pueden escribir cookies.
+ * 1. Refresca la sesión de Supabase en cada request (mantiene tokens activos).
+ * 2. Protege las rutas /admin/*: sin sesión redirige a /admin/login.
+ * 3. Si hay sesión y se visita /admin/login, redirige a /admin.
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -26,11 +25,10 @@ export async function proxy(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options)
-            })
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            response = NextResponse.next({ request })
+            cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
           } catch (error) {
-            // Ignorar error si no se pueden escribir cookies en proxy
             console.debug('[Supabase Proxy] Error escribiendo cookies:', error)
           }
         },
@@ -38,11 +36,27 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  // Refresca la sesión (importante para mantener tokens activos)
-  try {
-    await supabase.auth.getSession()
-  } catch (error) {
-    console.debug('[Supabase Proxy] Error refrescando sesión:', error)
+  // Refresca la sesión y obtiene el usuario actual
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const pathname = request.nextUrl.pathname
+
+  // Protege /admin/* (excepto /admin/login)
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin/login'
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // Con sesión activa en /admin/login, redirige a /admin
+  if (pathname === '/admin/login' && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/admin'
+    return NextResponse.redirect(url)
   }
 
   return response
@@ -51,6 +65,6 @@ export async function proxy(request: NextRequest) {
 // Ejecuta proxy en todas las rutas excepto assets estáticos
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp).*)',
   ],
 }
