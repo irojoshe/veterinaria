@@ -32,15 +32,15 @@ Reemplazar los datos simulados del catálogo de servicios por una lectura real d
 
 ## Checklist
 
-- [ ] T1 — Documento de arquitectura `docs/patterns/data-fetching.md` con las tres reglas de oro.
-- [ ] T2 — `createSupabasePublicServerClient()` sin cookies en `src/lib/supabase/server.ts`.
-- [ ] T3 — Tipo `ServicioPublico` (7 columnas, sin `publicado`).
-- [ ] T4 — `getServiciosPublicos()` con `unstable_cache`, cliente público, `.eq('publicado', true)`, 7 columnas, try/catch → `[]`.
-- [ ] T5 — `getServicios()` (admin) con cliente con cookies, sin caché, sin filtro de `publicado`.
-- [ ] T6 — Cards sin mapa `IMAGENES`: imagen desde `servicio.imagen_url` con fallback `/images/placeholder-servicio.jpg`.
-- [ ] T7 — Tipos del flujo de cita alineados con `ServicioPublico`.
-- [ ] T8 — `next.config.js` con `images.remotePatterns` para las URLs externas de la DB.
-- [ ] T9 — Verificación: `npx tsc --noEmit` exit 0.
+- [x] T1 — Documento de arquitectura `docs/patterns/data-fetching.md` con las tres reglas de oro.
+- [x] T2 — `createSupabasePublicServerClient()` sin cookies en `src/lib/supabase/server.ts`.
+- [x] T3 — Tipo `ServicioPublico` (7 columnas, sin `publicado`).
+- [x] T4 — `getServiciosPublicos()` con `unstable_cache`, cliente público, `.eq('publicado', true)`, 7 columnas, try/catch → `[]`.
+- [x] T5 — `getServicios()` (admin) con cliente con cookies, sin caché, sin filtro de `publicado`.
+- [x] T6 — Cards sin mapa `IMAGENES`: imagen desde `servicio.imagen_url` con fallback `/images/placeholder-servicio.jpg`.
+- [x] T7 — Tipos del flujo de cita alineados con `ServicioPublico`.
+- [x] T8 — `next.config.js` con `images.remotePatterns` para las URLs externas de la DB.
+- [x] T9 — Verificación: `npx tsc --noEmit` exit 0.
 
 ## Acceptance criteria
 
@@ -61,9 +61,13 @@ Direct inline. Un solo archivo de lógica de datos (`servicios.ts`) y ajustes me
 - Consumidores de `servicio.publicado` (solo admin): `admin/servicios/page.tsx:9`, `admin/servicios/_components/ServicioTableRow.tsx:30-31`, `admin/servicios/_components/FormServicio.tsx:68`.
 - `cookies()` dentro de `unstable_cache` lanza error: `node_modules/next/dist/server/request/headers.js:45-46`.
 - `next.config.js` sin `images.remotePatterns` → `next/image` falla con URLs externas.
+- Query validada contra la base real: 3 filas publicadas (`Consulta General`, `Medicina Preventiva`, `Vacunación`), `precio` numérico, `imagen_url` con host externo `loremflickr.com`.
+- `npx tsc --noEmit` → exit 0 sobre el working tree y sobre el árbol staged (verificado en un worktree temporal, sin tocar el working tree).
+- Sin verificación visual en navegador: el pipeline de CSS de Next no corre en WSL por falta del binding nativo `lightningcss-linux-x64-gnu` (solo está el de Windows). Limitación del entorno, no del código.
 
 ## Progress
 
 - [x] T1 — Documento de arquitectura creado.
-- [ ] T2–T8 — Implementación.
-- [ ] T9 — Verificación y commit.
+- [x] T2–T8 — Implementación.
+- [x] T9 — Verificación y commit `8ce773f` (`feat(servicios): implementa logica real de Supabase con cache y cliente publico`), pusheado a `origin/feat/home-figma-alignment`.
+- [ ] Pendiente del usuario: build en Windows (`npm run build`) para confirmar el render con las imágenes externas.
