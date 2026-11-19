@@ -29,6 +29,14 @@ export interface MascotaPublica {
   sexo: string
   fecha_nacimiento: string | null
   foto_url: string | null
+  precio: number
+  historia: string | null
+  estado_adopcion: string
+  vacunado: boolean
+  esterilizado: boolean
+  microchip: boolean
+  compatible_ninos: boolean
+  compatible_mascotas: boolean
 }
 
 /**

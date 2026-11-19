@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { getMascotasPublicas } from '@/lib/services/mascotas'
+import { getNegocio } from '@/lib/services/negocio'
 import type { MascotaPublica } from '@/lib/types'
 import MascotaCard from './_components/MascotaCard'
 
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 }
 
 export default async function MascotasPage() {
-  const mascotas = await getMascotasPublicas()
+  const [mascotas, negocio] = await Promise.all([
+    getMascotasPublicas(),
+    getNegocio(),
+  ])
 
   return (
     <div className="max-w-content mx-auto w-full px-6 md:px-20 py-12 flex flex-col gap-10">
@@ -21,11 +25,11 @@ export default async function MascotasPage() {
           La familia
         </span>
         <h1 className="text-32 md:text-52 font-semibold text-text-heading leading-tight">
-          Ellos también son parte de la clínica.
+          Encuentra a tu nuevo mejor amigo.
         </h1>
         <p className="text-18 text-text-muted leading-relaxed">
-          Cada mascota que viene con su historia. Estas son algunas de las
-          que ya nos acompañaron en consulta.
+          Conoce a los peluditos que buscan un hogar y dales una segunda
+          oportunidad.
         </p>
       </div>
 
@@ -43,7 +47,7 @@ export default async function MascotasPage() {
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {mascotas.map((mascota) => (
             <li key={mascota.id}>
-              <MascotaCard mascota={mascota} />
+              <MascotaCard mascota={mascota} whatsapp={negocio.whatsapp} />
             </li>
           ))}
         </ul>
