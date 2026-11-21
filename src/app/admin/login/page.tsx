@@ -15,7 +15,9 @@ export default async function LoginPage() {
   if (session) redirect('/admin')
 
   return (
-    <>
+    // Shell del login: dos columnas. No hereda el layout autenticado del panel,
+    // que vive en src/app/admin/(panel)/layout.tsx.
+    <div className="min-h-screen bg-background flex">
       {/* Columna izquierda — imagen y marca */}
       <div className="hidden lg:flex flex-col gap-9 w-panel-lg shrink-0
                       bg-primary-deeper p-12">
@@ -88,7 +90,7 @@ export default async function LoginPage() {
           <LoginForm />
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
