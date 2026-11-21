@@ -9,7 +9,7 @@ export default async function ServiciosAdminPage() {
   const publicados = servicios.filter((s) => s.publicado).length
 
   return (
-    <div className="px-9 py-9 flex flex-col gap-6 max-w-page">
+    <div className="px-4 py-6 md:px-9 md:py-9 flex flex-col gap-6 max-w-page">
       <div className="flex flex-col gap-1">
         <p className="text-13 text-text-muted">Administración / Servicios</p>
         <h1 className="text-32 font-semibold text-text-heading">Servicios</h1>

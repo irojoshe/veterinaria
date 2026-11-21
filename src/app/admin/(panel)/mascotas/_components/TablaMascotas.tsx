@@ -34,29 +34,31 @@ export default function TablaMascotas({ mascotas }: Props) {
         </Button>
       </div>
 
-      <div className="border border-border rounded-lg overflow-hidden">
-        <div
-          className="grid grid-cols-[56px_1fr_1fr_1fr_100px_120px] gap-3.5
-                     px-4 py-3 bg-accent-green-light
-                     text-11 font-bold text-text-muted uppercase tracking-wide"
-        >
-          <span>Foto</span>
-          <span>Nombre</span>
-          <span>Identificación</span>
-          <span>Propietario</span>
-          <span>Publicación</span>
-          <span>Acciones</span>
-        </div>
+      <div className="border border-border rounded-lg overflow-x-auto">
+        <div className="min-w-[800px]">
+          <div
+            className="grid grid-cols-[56px_1fr_1fr_1fr_100px_120px] gap-3.5
+                       px-4 py-3 bg-accent-green-light
+                       text-11 font-bold text-text-muted uppercase tracking-wide"
+          >
+            <span>Foto</span>
+            <span>Nombre</span>
+            <span>Identificación</span>
+            <span>Propietario</span>
+            <span>Publicación</span>
+            <span>Acciones</span>
+          </div>
 
-        {slice.map((m, i) => (
-          <MascotaTableRow
-            key={m.id}
-            mascota={m}
-            esUltimo={i === slice.length - 1}
-            onEditar={() => setEditando(m)}
-            onEliminar={() => setEliminandoId(m.id)}
-          />
-        ))}
+          {slice.map((m, i) => (
+            <MascotaTableRow
+              key={m.id}
+              mascota={m}
+              esUltimo={i === slice.length - 1}
+              onEditar={() => setEditando(m)}
+              onEliminar={() => setEliminandoId(m.id)}
+            />
+          ))}
+        </div>
       </div>
 
       {paginas > 1 && (

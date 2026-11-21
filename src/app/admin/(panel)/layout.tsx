@@ -27,7 +27,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background resize-y overflow-auto">
       <AdminSidebar />
 
       {/* Área de trabajo */}
@@ -35,14 +35,14 @@ export default async function AdminLayout({
         <AdminTopbar />
         <main
           id="admin-main"
-          className="flex-1 overflow-y-auto"
+          className="flex-1 min-h-0 overflow-y-auto"
           aria-label="Contenido principal de administración"
         >
           {children}
         </main>
 
         {/* Aviso de datos de ejemplo */}
-        <footer className="px-9 py-2 border-t border-border bg-background-surface">
+        <footer className="px-4 md:px-9 py-2 border-t border-border bg-background-surface">
           <p className="text-11 text-text-muted">
             Huella Vet · Datos ilustrativos · Sin conexión a servicios reales
           </p>

@@ -26,7 +26,13 @@ export default function DeleteModal({
   }, [state, onClose])
 
   return (
-    <Modal open={Boolean(id)} onClose={onClose} title={title} size="sm">
+    <Modal
+      open={Boolean(id)}
+      onClose={onClose}
+      title={title}
+      size="sm"
+      className="w-[calc(100vw-2rem)] max-w-sm [&>div:last-child]:p-4 sm:[&>div:last-child]:p-6"
+    >
       <div className="flex flex-col gap-4">
         <p className="text-14 text-text-muted">
           ¿Eliminar <strong className="text-text-main">{nombre}</strong>?
@@ -37,7 +43,7 @@ export default function DeleteModal({
             {state.error}
           </p>
         )}
-        <form action={formAction} className="flex gap-3">
+        <form action={formAction} className="flex flex-col sm:flex-row gap-3">
           <input type="hidden" name="id" value={id ?? ''} />
           <Button
             type="submit"

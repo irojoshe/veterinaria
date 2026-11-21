@@ -35,29 +35,31 @@ export default function TablaServicios({ servicios }: Props) {
         </Button>
       </div>
 
-      <div className="border border-border rounded-lg overflow-hidden">
-        <div
-          className="grid grid-cols-[64px_1fr_80px_80px_100px_120px] gap-3.5
-                     px-4 py-3 bg-accent-green-light
-                     text-11 font-bold text-text-muted uppercase tracking-wide"
-        >
-          <span>Imagen</span>
-          <span>Nombre</span>
-          <span>Precio</span>
-          <span>Duración</span>
-          <span>Publicación</span>
-          <span>Acciones</span>
-        </div>
+      <div className="border border-border rounded-lg overflow-x-auto">
+        <div className="min-w-[760px]">
+          <div
+            className="grid grid-cols-[64px_1fr_80px_80px_100px_120px] gap-3.5
+                       px-4 py-3 bg-accent-green-light
+                       text-11 font-bold text-text-muted uppercase tracking-wide"
+          >
+            <span>Imagen</span>
+            <span>Nombre</span>
+            <span>Precio</span>
+            <span>Duración</span>
+            <span>Publicación</span>
+            <span>Acciones</span>
+          </div>
 
-        {slice.map((s, i) => (
-          <ServicioTableRow
-            key={s.id}
-            servicio={s}
-            esUltimo={i === slice.length - 1}
-            onEditar={() => setEditando(s)}
-            onEliminar={() => setEliminandoId(s.id)}
-          />
-        ))}
+          {slice.map((s, i) => (
+            <ServicioTableRow
+              key={s.id}
+              servicio={s}
+              esUltimo={i === slice.length - 1}
+              onEditar={() => setEditando(s)}
+              onEliminar={() => setEliminandoId(s.id)}
+            />
+          ))}
+        </div>
       </div>
 
       {paginas > 1 && (

@@ -27,50 +27,52 @@ export default async function TablaCitasHoy() {
         </Link>
       </div>
 
-      <div className="border border-border rounded-lg overflow-hidden">
-        {/* Cabecera */}
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto_auto] gap-3.5
-                        px-4 py-3 bg-accent-green-light
-                        text-11 font-bold text-text-muted uppercase tracking-wide">
-          <span>Fecha / hora</span>
-          <span>Propietario / mascota</span>
-          <span>Servicio</span>
-          <span>Estado</span>
-          <span>Referencia</span>
-          <span>Acciones</span>
-        </div>
-
-        {/* Filas */}
-        {citas.map((cita, i) => (
-          <div
-            key={cita.id}
-            className={`grid grid-cols-[1fr_1fr_1fr_auto_auto_auto] gap-3.5
-                        px-4 py-3.5 items-center text-13
-                        ${i < citas.length - 1 ? 'border-b border-border' : ''}
-                        bg-background-surface`}
-          >
-            <span className="font-semibold text-text-main">
-              {cita.hora_preferida}
-            </span>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-text-main">{cita.propietario_nombre}</span>
-              <span className="text-text-muted">{cita.mascota_nombre}</span>
-            </div>
-            <span className="text-text-muted">{cita.servicio_nombre}</span>
-            <Badge variant={ESTADO_VARIANT[cita.estado]}>
-              {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}
-            </Badge>
-            <span className="text-text-muted">{cita.referencia}</span>
-            <Link
-              href={`/admin/citas/${cita.id}`}
-              className="text-13 font-semibold text-primary hover:underline
-                         focus-visible:outline-none focus-visible:ring-2
-                         focus-visible:ring-primary rounded-sm whitespace-nowrap"
-            >
-              Ver / Editar ↗
-            </Link>
+      <div className="border border-border rounded-lg overflow-x-auto">
+        <div className="min-w-[900px]">
+          {/* Cabecera */}
+          <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto_auto] gap-3.5
+                          px-4 py-3 bg-accent-green-light
+                          text-11 font-bold text-text-muted uppercase tracking-wide">
+            <span>Fecha / hora</span>
+            <span>Propietario / mascota</span>
+            <span>Servicio</span>
+            <span>Estado</span>
+            <span>Referencia</span>
+            <span>Acciones</span>
           </div>
-        ))}
+
+          {/* Filas */}
+          {citas.map((cita, i) => (
+            <div
+              key={cita.id}
+              className={`grid grid-cols-[1fr_1fr_1fr_auto_auto_auto] gap-3.5
+                          px-4 py-3.5 items-center text-13
+                          ${i < citas.length - 1 ? 'border-b border-border' : ''}
+                          bg-background-surface`}
+            >
+              <span className="font-semibold text-text-main">
+                {cita.hora_preferida}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-text-main">{cita.propietario_nombre}</span>
+                <span className="text-text-muted">{cita.mascota_nombre}</span>
+              </div>
+              <span className="text-text-muted">{cita.servicio_nombre}</span>
+              <Badge variant={ESTADO_VARIANT[cita.estado]}>
+                {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}
+              </Badge>
+              <span className="text-text-muted">{cita.referencia}</span>
+              <Link
+                href={`/admin/citas/${cita.id}`}
+                className="text-13 font-semibold text-primary hover:underline
+                           focus-visible:outline-none focus-visible:ring-2
+                           focus-visible:ring-primary rounded-sm whitespace-nowrap"
+              >
+                Ver / Editar ↗
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )

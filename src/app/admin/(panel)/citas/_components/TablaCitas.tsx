@@ -54,20 +54,22 @@ export default function TablaCitas({ citas }: Props) {
         {citasFiltradas.length === 0 ? (
           <EmptyState onLimpiar={() => { setFiltro('todas'); setBusqueda('') }} />
         ) : (
-          <div className="border border-border rounded-lg overflow-hidden">
-            <div className="grid grid-cols-6 gap-3.5 px-4 py-3 bg-accent-green-light
-                            text-11 font-bold text-text-muted uppercase tracking-wide"
-                 role="row">
-              {COLS.map((c) => <span key={c} role="columnheader">{c}</span>)}
+          <div className="border border-border rounded-lg overflow-x-auto">
+            <div className="min-w-[900px]">
+              <div className="grid grid-cols-6 gap-3.5 px-4 py-3 bg-accent-green-light
+                              text-11 font-bold text-text-muted uppercase tracking-wide"
+                   role="row">
+                {COLS.map((c) => <span key={c} role="columnheader">{c}</span>)}
+              </div>
+              {citasFiltradas.map((cita, i) => (
+                <FilaCita
+                  key={cita.id}
+                  cita={cita}
+                  ultimo={i === citasFiltradas.length - 1}
+                  onClick={() => setSeleccionada(cita)}
+                />
+              ))}
             </div>
-            {citasFiltradas.map((cita, i) => (
-              <FilaCita
-                key={cita.id}
-                cita={cita}
-                ultimo={i === citasFiltradas.length - 1}
-                onClick={() => setSeleccionada(cita)}
-              />
-            ))}
           </div>
         )}
       </div>

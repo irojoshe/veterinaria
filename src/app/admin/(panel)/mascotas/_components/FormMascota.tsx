@@ -28,7 +28,7 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
         required
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-13 font-semibold text-text-main">Especie *</label>
           <select

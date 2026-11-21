@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: 'Resumen' }
 
 export default function AdminDashboardPage() {
   return (
-    <div className="px-9 py-9 flex flex-col gap-8 max-w-page">
+    <div className="px-4 py-6 md:px-9 md:py-9 flex flex-col gap-8 max-w-page">
 
       {/* Encabezado */}
       <div className="flex flex-col gap-1">
