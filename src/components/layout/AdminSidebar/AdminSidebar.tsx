@@ -12,7 +12,7 @@ export default function AdminSidebar() {
   return (
     <aside
       className="hidden md:flex flex-col w-sidebar shrink-0 bg-primary-deeper
-                 min-h-screen sticky top-0 h-screen overflow-y-auto"
+                 h-full overflow-y-auto"
       aria-label="Navegación administrativa"
     >
       <SidebarBrand />

@@ -17,9 +17,10 @@ export default async function LoginPage() {
   return (
     // Shell del login: dos columnas. No hereda el layout autenticado del panel,
     // que vive en src/app/admin/(panel)/layout.tsx.
-    <div className="min-h-screen bg-background flex">
+    // h-screen + overflow-hidden: la página no scrollea, la columna del formulario sí.
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Columna izquierda — imagen y marca */}
-      <div className="hidden lg:flex flex-col gap-9 w-panel-lg shrink-0
+      <div className="hidden lg:flex flex-col gap-9 w-panel-lg shrink-0 h-full
                       bg-primary-deeper p-12">
         {/* Brand */}
         <div className="flex items-center gap-2.5">
@@ -56,38 +57,42 @@ export default async function LoginPage() {
       </div>
 
       {/* Columna derecha — formulario */}
-      <div className="flex flex-col justify-center flex-1 px-8 md:px-18 py-12
-                      max-w-xl mx-auto w-full">
-        <div className="flex flex-col gap-8">
-          {/* Encabezado */}
-          <div className="flex flex-col gap-3">
-            <span className="text-12 font-bold tracking-wide uppercase text-primary">
-              Solo administración
-            </span>
-            <h1 className="text-32 font-semibold text-text-heading">
-              Bienvenido de nuevo.
-            </h1>
-            <p className="text-15 text-text-muted">
-              Accede para gestionar las citas y la información de la clínica.
-            </p>
-          </div>
-
-          {/* Aviso de sesión expirada — informativo */}
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-accent-amber-light">
-            <span className="text-16 shrink-0" aria-hidden="true">ℹ</span>
-            <div className="flex flex-col gap-0.5">
-              <p className="text-13 font-semibold text-text-main">
-                Acceso no autorizado o sesión expirada
-              </p>
-              <p className="text-12 text-text-muted">
-                Para proteger los datos, vuelve a iniciar sesión con una cuenta autorizada.
-                No se ha mostrado información privada.
+      <div className="flex-1 min-w-0 overflow-y-auto">
+        {/* min-h-full: centra el contenido sin recortarlo cuando excede el alto */}
+        <div className="min-h-full flex flex-col justify-center px-6 md:px-9
+                        py-10 md:py-12 max-w-xl mx-auto w-full">
+          <div className="flex flex-col gap-8">
+            {/* Encabezado */}
+            <div className="flex flex-col gap-3">
+              <span className="text-12 font-bold tracking-wide uppercase text-primary">
+                Solo administración
+              </span>
+              <h1 className="text-32 font-semibold text-text-heading">
+                Bienvenido de nuevo.
+              </h1>
+              <p className="text-15 text-text-muted">
+                Accede para gestionar las citas y la información de la clínica.
               </p>
             </div>
-          </div>
 
-          {/* Formulario */}
-          <LoginForm />
+            {/* Aviso de acceso denegado — peligro */}
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-status-cancelled-bg
+                            border border-status-cancelled/20">
+              <span className="text-16 shrink-0" aria-hidden="true">⚠</span>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-13 font-semibold text-status-cancelled">
+                  Acceso no autorizado o sesión expirada
+                </p>
+                <p className="text-12 text-text-muted">
+                  Para proteger los datos, vuelve a iniciar sesión con una cuenta autorizada.
+                  No se ha mostrado información privada.
+                </p>
+              </div>
+            </div>
+
+            {/* Formulario */}
+            <LoginForm />
+          </div>
         </div>
       </div>
     </div>

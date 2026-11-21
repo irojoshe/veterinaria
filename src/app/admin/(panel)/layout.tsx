@@ -27,11 +27,11 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-background resize-y overflow-auto">
+    <div className="flex h-screen overflow-hidden bg-background">
       <AdminSidebar />
 
       {/* Área de trabajo */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 min-h-0">
         <AdminTopbar />
         <main
           id="admin-main"
