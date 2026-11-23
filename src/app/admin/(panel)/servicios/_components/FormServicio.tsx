@@ -21,12 +21,18 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {servicio?.id && <input type="hidden" name="id" value={servicio.id} />}
+      {servicio?.imagekit_file_id && (
+        <input
+          type="hidden"
+          name="imagekit_file_id"
+          defaultValue={servicio.imagekit_file_id}
+        />
+      )}
 
       <Input
         label="Nombre del servicio *"
         name="nombre"
         defaultValue={servicio?.nombre}
-        error={state?.error}
         required
       />
       <div className="flex flex-col gap-1.5">
@@ -60,6 +66,14 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
           required
         />
       </div>
+
+      <Input
+        label="URL de la imagen (opcional)"
+        name="imagen_url"
+        type="url"
+        placeholder="https://images.example.com/servicio.jpg"
+        defaultValue={servicio?.imagen_url ?? ''}
+      />
 
       <div className="flex flex-col gap-1.5">
         <label className="text-13 font-semibold text-text-main">Estado de publicación</label>

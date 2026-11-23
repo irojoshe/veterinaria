@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import Badge from '@/components/ui/Badge'
-import type { Servicio } from '@/lib/types'
+import type { ServicioRow } from '@/lib/types'
 
 interface Props {
-  servicio: Servicio
+  servicio: ServicioRow
   esUltimo: boolean
   onEditar: () => void
   onEliminar: () => void
@@ -20,10 +21,15 @@ export default function ServicioTableRow({
                   px-4 py-3.5 items-center text-13 bg-background-surface
                   ${esUltimo ? '' : 'border-b border-border'}`}
     >
-      <div
-        className="w-16 h-12 rounded-md bg-background-warm"
-        aria-hidden="true"
-      />
+      <div className="relative w-16 h-12 overflow-hidden rounded-md bg-background-warm shrink-0">
+        <Image
+          src={servicio.imagen_url || '/images/placeholder-servicio.jpg'}
+          alt={`Imagen de ${servicio.nombre}`}
+          fill
+          sizes="64px"
+          className="object-cover rounded-md"
+        />
+      </div>
       <span className="font-semibold text-text-main">{servicio.nombre}</span>
       <span className="text-text-muted">{servicio.precio} €</span>
       <span className="text-text-muted">{servicio.duracion_minutos} min</span>

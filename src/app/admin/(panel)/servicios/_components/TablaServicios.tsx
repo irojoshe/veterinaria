@@ -9,17 +9,17 @@ import { eliminarServicio } from '../actions'
 import PaginationControls from '../../_components/shared/PaginationControls'
 import DeleteModal from '../../_components/shared/DeleteModal'
 import ServicioTableRow from './ServicioTableRow'
-import type { Servicio } from '@/lib/types'
+import type { ServicioRow } from '@/lib/types'
 
 const PAGE_SIZE = 6
 
 interface Props {
-  servicios: Servicio[]
+  servicios: ServicioRow[]
 }
 
 export default function TablaServicios({ servicios }: Props) {
   const [pagina, setPagina] = useState(1)
-  const [editando, setEditando] = useState<Servicio | null | 'nuevo'>(null)
+  const [editando, setEditando] = useState<ServicioRow | null | 'nuevo'>(null)
   const [eliminandoId, setEliminandoId] = useState<string | null>(null)
 
   const total = servicios.length
@@ -78,12 +78,12 @@ export default function TablaServicios({ servicios }: Props) {
         title={
           editando === 'nuevo'
             ? 'Nuevo servicio'
-            : `Editar · ${(editando as Servicio)?.nombre}`
+            : `Editar · ${(editando as ServicioRow)?.nombre}`
         }
         size="md"
       >
         <FormServicio
-          servicio={editando === 'nuevo' ? undefined : (editando as Servicio)}
+          servicio={editando === 'nuevo' ? undefined : (editando as ServicioRow)}
           onSuccess={() => setEditando(null)}
         />
       </Modal>

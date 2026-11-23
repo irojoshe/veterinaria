@@ -41,10 +41,10 @@ export default async function AdminLayout({
           {children}
         </main>
 
-        {/* Aviso de datos de ejemplo */}
+        {/* Connection status */}
         <footer className="px-4 md:px-9 py-2 border-t border-border bg-background-surface">
           <p className="text-11 text-text-muted">
-            Huella Vet · Datos ilustrativos · Sin conexión a servicios reales
+            Huella Vet · Datos obtenidos de la base real
           </p>
         </footer>
       </div>

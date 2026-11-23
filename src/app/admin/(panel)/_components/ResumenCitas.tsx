@@ -4,6 +4,11 @@ import BarraEstado from './BarraEstado'
 
 export default async function ResumenCitas() {
   const stats = await getResumenEstadisticas()
+  const month = new Intl.DateTimeFormat('es-ES', {
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date())
+  const monthTitle = month.charAt(0).toUpperCase() + month.slice(1)
 
   return (
     <section className="flex flex-col gap-4">
@@ -16,7 +21,7 @@ export default async function ResumenCitas() {
           sub={`${stats.citas_hoy_pendientes} pendiente · ${stats.citas_hoy_confirmadas} confirmadas`}
         />
         <StatCard
-          label="Citas de noviembre"
+          label={`Citas de ${month}`}
           value={stats.citas_mes}
           sub="Todos los estados"
         />
@@ -26,7 +31,7 @@ export default async function ResumenCitas() {
       <div className="flex flex-col gap-3 bg-background-surface border border-border
                       rounded-lg p-6">
         <p className="text-14 font-semibold text-text-main">
-          Citas por estado · Noviembre
+          Citas por estado · {monthTitle}
         </p>
         <div className="flex flex-col gap-3">
           <BarraEstado

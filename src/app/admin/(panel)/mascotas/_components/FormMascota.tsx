@@ -20,6 +20,44 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
+      <input type="hidden" name="sexo" defaultValue={mascota?.sexo ?? ''} />
+      <input
+        type="hidden"
+        name="fecha_nacimiento"
+        defaultValue={mascota?.fecha_nacimiento ?? ''}
+      />
+      <input type="hidden" name="precio" defaultValue={mascota?.precio ?? 0} />
+      <input type="hidden" name="historia" defaultValue={mascota?.historia ?? ''} />
+      <input
+        type="hidden"
+        name="estado_adopcion"
+        defaultValue={mascota?.estado_adopcion ?? 'disponible'}
+      />
+      <input
+        type="hidden"
+        name="vacunado"
+        defaultValue={mascota?.vacunado ? 'true' : 'false'}
+      />
+      <input
+        type="hidden"
+        name="esterilizado"
+        defaultValue={mascota?.esterilizado ? 'true' : 'false'}
+      />
+      <input
+        type="hidden"
+        name="microchip"
+        defaultValue={mascota?.microchip ? 'true' : 'false'}
+      />
+      <input
+        type="hidden"
+        name="compatible_ninos"
+        defaultValue={mascota?.compatible_ninos ? 'true' : 'false'}
+      />
+      <input
+        type="hidden"
+        name="compatible_mascotas"
+        defaultValue={mascota?.compatible_mascotas ? 'true' : 'false'}
+      />
 
       <Input
         label="Nombre *"
@@ -53,17 +91,18 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       </div>
 
       <Input
-        label="Propietario"
-        name="propietario"
-        placeholder="Nombre del propietario"
-        defaultValue={mascota?.propietario}
+        label="URL de la foto (opcional)"
+        name="foto_url"
+        type="url"
+        placeholder="https://images.example.com/mascota.jpg"
+        defaultValue={mascota?.foto_url ?? ''}
       />
 
       <div className="flex flex-col gap-1.5">
         <label className="text-13 font-semibold text-text-main">Visibilidad</label>
         <select
-          name="publica"
-          defaultValue={mascota?.publica ? 'true' : 'false'}
+          name="publicado"
+          defaultValue={mascota?.publicado ? 'true' : 'false'}
           className="h-btn px-3.5 rounded-md text-14 text-text-main
                      bg-background-surface border border-border outline-none
                      focus:ring-2 focus:ring-primary"

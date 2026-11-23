@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import FiltroCitas, { type FiltroEstado } from './FiltroCitas'
 import DetalleCitaModal from './DetalleCitaModal'
 import FilaCita from './FilaCita'
+import { getCitaReference } from '@/lib/types'
 import type { Cita, EstadoCita } from '@/lib/types'
 
 const COLS = ['Fecha / hora', 'Propietario / mascota', 'Servicio', 'Estado', 'Referencia', 'Acciones']
@@ -31,7 +32,7 @@ export default function TablaCitas({ citas }: Props) {
         !q ||
         c.propietario_nombre.toLowerCase().includes(q) ||
         c.mascota_nombre.toLowerCase().includes(q) ||
-        c.referencia.toLowerCase().includes(q)
+        getCitaReference(c.id).toLowerCase().includes(q)
       return coincideFiltro && coincideBusqueda
     })
   }, [citas, filtro, busqueda])

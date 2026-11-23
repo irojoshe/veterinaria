@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import Badge from '@/components/ui/Badge'
-import type { Mascota } from '@/lib/types'
+import type { MascotaRow } from '@/lib/types'
 
 interface Props {
-  mascota: Mascota
+  mascota: MascotaRow
   esUltimo: boolean
   onEditar: () => void
   onEliminar: () => void
@@ -16,14 +17,19 @@ export default function MascotaTableRow({
 }: Props) {
   return (
     <div
-      className={`grid grid-cols-[56px_1fr_1fr_1fr_100px_120px] gap-3.5
+      className={`grid grid-cols-[56px_1fr_1fr_100px_120px] gap-3.5
                   px-4 py-3.5 items-center text-13 bg-background-surface
                   ${esUltimo ? '' : 'border-b border-border'}`}
     >
-      <div
-        className="w-14 h-photo-sm rounded-lg bg-background-warm shrink-0"
-        aria-hidden="true"
-      />
+      <div className="relative w-14 h-12 overflow-hidden rounded-md bg-background-warm shrink-0">
+        <Image
+          src={mascota.foto_url || '/images/placeholder-mascota.jpg'}
+          alt={`Foto de ${mascota.nombre}`}
+          fill
+          sizes="56px"
+          className="object-cover rounded-md"
+        />
+      </div>
 
       <span className="font-semibold text-text-main">{mascota.nombre}</span>
 
@@ -31,10 +37,8 @@ export default function MascotaTableRow({
         {mascota.especie} · {mascota.raza || '—'}
       </span>
 
-      <span className="text-text-muted">{mascota.propietario ?? '—'}</span>
-
-      <Badge variant={mascota.publica ? 'public' : 'private'}>
-        {mascota.publica ? 'Pública' : 'Privada'}
+      <Badge variant={mascota.publicado ? 'public' : 'private'}>
+        {mascota.publicado ? 'Pública' : 'Privada'}
       </Badge>
 
       <div className="flex gap-3">

@@ -52,9 +52,6 @@ export default async function CitasAdminPage() {
         </div>
       </div>
 
-      <p className="text-11 text-text-muted">
-        Datos de ejemplo · Solo administración
-      </p>
     </div>
   )
 }

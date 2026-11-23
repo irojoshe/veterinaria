@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import { getCitasHoy } from '@/lib/services/dashboard'
+import { formatCitaDate, formatCitaTime, getCitaReference } from '@/lib/types'
 import type { EstadoCita } from '@/lib/types'
 
 const ESTADO_VARIANT: Record<EstadoCita, 'pending' | 'confirmed' | 'attended' | 'cancelled'> = {
@@ -50,18 +51,23 @@ export default async function TablaCitasHoy() {
                           ${i < citas.length - 1 ? 'border-b border-border' : ''}
                           bg-background-surface`}
             >
-              <span className="font-semibold text-text-main">
-                {cita.hora_preferida}
-              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold text-text-main">
+                  {formatCitaTime(cita.hora)}
+                </span>
+                <span className="text-12 text-text-muted">
+                  {formatCitaDate(cita.fecha)}
+                </span>
+              </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-text-main">{cita.propietario_nombre}</span>
                 <span className="text-text-muted">{cita.mascota_nombre}</span>
               </div>
-              <span className="text-text-muted">{cita.servicio_nombre}</span>
+              <span className="text-text-muted">{cita.servicios?.nombre ?? '—'}</span>
               <Badge variant={ESTADO_VARIANT[cita.estado]}>
                 {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}
               </Badge>
-              <span className="text-text-muted">{cita.referencia}</span>
+              <span className="text-text-muted">{getCitaReference(cita.id)}</span>
               <Link
                 href={`/admin/citas/${cita.id}`}
                 className="text-13 font-semibold text-primary hover:underline

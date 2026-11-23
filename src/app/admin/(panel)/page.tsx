@@ -9,6 +9,13 @@ import TablaCitasHoy from './_components/TablaCitasHoy'
 export const metadata: Metadata = { title: 'Resumen' }
 
 export default function AdminDashboardPage() {
+  const currentDate = new Intl.DateTimeFormat('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date())
+
   return (
     <div className="px-4 py-6 md:px-9 md:py-9 flex flex-col gap-8 max-w-page">
 
@@ -18,7 +25,7 @@ export default function AdminDashboardPage() {
           Una mirada al día de hoy
         </h1>
         <p className="text-15 text-text-muted">
-          18 de noviembre de 2026 · Vista de ejemplo, no actualizada en tiempo real.
+          {currentDate} · Datos actualizados desde la base real.
         </p>
       </div>
 
@@ -54,7 +61,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <p className="text-11 text-text-muted">
-        Huella Vet · Datos ilustrativos · Sin conexión a servicios reales
+        Huella Vet · Datos obtenidos de la base real
       </p>
     </div>
   )

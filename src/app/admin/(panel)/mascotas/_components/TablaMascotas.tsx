@@ -9,17 +9,17 @@ import { eliminarMascota } from '../actions'
 import PaginationControls from '../../_components/shared/PaginationControls'
 import DeleteModal from '../../_components/shared/DeleteModal'
 import MascotaTableRow from './MascotaTableRow'
-import type { Mascota } from '@/lib/types'
+import type { MascotaRow } from '@/lib/types'
 
 const PAGE_SIZE = 6
 
 interface Props {
-  mascotas: Mascota[]
+  mascotas: MascotaRow[]
 }
 
 export default function TablaMascotas({ mascotas }: Props) {
   const [pagina, setPagina] = useState(1)
-  const [editando, setEditando] = useState<Mascota | null | 'nueva'>(null)
+  const [editando, setEditando] = useState<MascotaRow | null | 'nueva'>(null)
   const [eliminandoId, setEliminandoId] = useState<string | null>(null)
 
   const paginas = Math.ceil(mascotas.length / PAGE_SIZE)
@@ -37,14 +37,13 @@ export default function TablaMascotas({ mascotas }: Props) {
       <div className="border border-border rounded-lg overflow-x-auto">
         <div className="min-w-[800px]">
           <div
-            className="grid grid-cols-[56px_1fr_1fr_1fr_100px_120px] gap-3.5
+            className="grid grid-cols-[56px_1fr_1fr_100px_120px] gap-3.5
                        px-4 py-3 bg-accent-green-light
                        text-11 font-bold text-text-muted uppercase tracking-wide"
           >
             <span>Foto</span>
             <span>Nombre</span>
             <span>Identificación</span>
-            <span>Propietario</span>
             <span>Publicación</span>
             <span>Acciones</span>
           </div>
@@ -77,12 +76,12 @@ export default function TablaMascotas({ mascotas }: Props) {
         title={
           editando === 'nueva'
             ? 'Nueva mascota'
-            : `Editar · ${(editando as Mascota)?.nombre}`
+            : `Editar · ${(editando as MascotaRow)?.nombre}`
         }
         size="md"
       >
         <FormMascota
-          mascota={editando === 'nueva' ? undefined : (editando as Mascota)}
+          mascota={editando === 'nueva' ? undefined : (editando as MascotaRow)}
           onSuccess={() => setEditando(null)}
         />
       </Modal>
