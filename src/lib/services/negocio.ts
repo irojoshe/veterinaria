@@ -1,5 +1,8 @@
 import { unstable_cache } from 'next/cache'
-import { createSupabasePublicServerClient } from '@/lib/supabase/server'
+import {
+  createSupabasePublicServerClient,
+  createSupabaseServerClient,
+} from '@/lib/supabase/server'
 import type { Negocio } from '@/lib/types'
 
 /**
@@ -69,3 +72,64 @@ export const getNegocio = unstable_cache(
   ['negocio-publico'],
   { revalidate: 300, tags: ['negocio'] },
 )
+
+const ERROR_ACTUALIZACION = 'No se pudo actualizar la información de la clínica.'
+
+export async function actualizarNegocio(
+  data: Negocio,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const payload: Negocio = {
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      direccion: data.direccion,
+      telefono: data.telefono,
+      email: data.email,
+      whatsapp: data.whatsapp,
+      horario: data.horario,
+      mapa_url: data.mapa_url,
+    }
+
+    const { data: fila, error: selectError } = await supabase
+      .from('negocio')
+      .select('id')
+      .limit(1)
+      .maybeSingle()
+
+    if (selectError) {
+      console.error('[negocio] Error al buscar el registro:', selectError.message)
+      return { success: false, error: ERROR_ACTUALIZACION }
+    }
+
+    if (!fila) {
+      const { error: insertError } = await supabase
+        .from('negocio')
+        .insert(payload)
+        .select('id')
+        .single()
+
+      if (insertError) {
+        console.error('[negocio] Error al crear el registro:', insertError.message)
+        return { success: false, error: ERROR_ACTUALIZACION }
+      }
+
+      return { success: true }
+    }
+
+    const { error: updateError } = await supabase
+      .from('negocio')
+      .update(payload)
+      .eq('id', fila.id)
+
+    if (updateError) {
+      console.error('[negocio] Error al actualizar el registro:', updateError.message)
+      return { success: false, error: ERROR_ACTUALIZACION }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('[negocio] Error inesperado al actualizar la clínica:', error)
+    return { success: false, error: ERROR_ACTUALIZACION }
+  }
+}

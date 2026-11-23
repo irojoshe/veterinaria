@@ -3,28 +3,16 @@ import {
   createSupabasePublicServerClient,
   createSupabaseServerClient,
 } from '@/lib/supabase/server'
-import type { Servicio, ServicioPublico } from '@/lib/types'
+import type { Servicio, ServicioPublico, ServicioRow } from '@/lib/types'
 
-/**
- * Columnas del catálogo de servicios: exactamente las que consume la UI.
- * Ni una más (SELECT *) ni una menos (la UI leería undefined).
- * Ver docs/patterns/data-fetching.md.
- */
 const COLUMNAS_SERVICIO =
-  'id, nombre, descripcion, precio, imagen_url, slug, duracion_minutos'
+  'id, nombre, descripcion, precio, imagen_url, imagekit_file_id, slug, duracion_minutos'
 
-/**
- * Catálogo público de servicios.
- *
- * Lectura cacheada con `unstable_cache`: es información pública y estable.
- * Usa el cliente sin cookies porque dentro de un scope de cache Next.js 16
- * lanza un error al leer cookies o headers.
- */
+type ResultadoEscritura = { success: boolean; error?: string }
 export const getServiciosPublicos = unstable_cache(
   async (): Promise<ServicioPublico[]> => {
     try {
       const supabase = createSupabasePublicServerClient()
-
       const { data, error } = await supabase
         .from('servicios')
         .select(COLUMNAS_SERVICIO)
@@ -32,19 +20,13 @@ export const getServiciosPublicos = unstable_cache(
         .order('nombre')
 
       if (error) {
-        console.error(
-          '[servicios] Error al leer servicios publicados:',
-          error.message,
-        )
+        console.error('[servicios] Error al leer servicios publicados:', error.message)
         return []
       }
 
       return (data ?? []) as ServicioPublico[]
     } catch (error) {
-      console.error(
-        '[servicios] Error inesperado al leer servicios publicados:',
-        error,
-      )
+      console.error('[servicios] Error inesperado al leer servicios publicados:', error)
       return []
     }
   },
@@ -52,18 +34,10 @@ export const getServiciosPublicos = unstable_cache(
   { revalidate: 300, tags: ['servicios'] },
 )
 
-/**
- * Detalle público de un servicio por su slug.
- *
- * Lectura cacheada con `unstable_cache`: cada slug es una entrada propia y el
- * contenido es público y estable. Usa el cliente sin cookies porque dentro de
- * un scope de cache Next.js 16 lanza un error al leer cookies o headers.
- */
 export const getServicioBySlug = unstable_cache(
   async (slug: string): Promise<ServicioPublico | null> => {
     try {
       const supabase = createSupabasePublicServerClient()
-
       const { data, error } = await supabase
         .from('servicios')
         .select(COLUMNAS_SERVICIO)
@@ -72,19 +46,13 @@ export const getServicioBySlug = unstable_cache(
         .maybeSingle()
 
       if (error) {
-        console.error(
-          '[servicios] Error al leer el servicio:',
-          error.message,
-        )
+        console.error('[servicios] Error al leer el servicio:', error.message)
         return null
       }
 
       return (data ?? null) as ServicioPublico | null
     } catch (error) {
-      console.error(
-        '[servicios] Error inesperado al leer el servicio:',
-        error,
-      )
+      console.error('[servicios] Error inesperado al leer el servicio:', error)
       return null
     }
   },
@@ -92,16 +60,10 @@ export const getServicioBySlug = unstable_cache(
   { revalidate: 300, tags: ['servicios'] },
 )
 
-/**
- * Servicios para el panel de administración.
- *
- * Sin caché: el administrador necesita ver los cambios al instante.
- * Usa el cliente con cookies (sesión del usuario) y no filtra por `publicado`.
- */
-export async function getServicios(): Promise<Servicio[]> {
+/** Uncached admin catalog using the cookie-backed client. */
+export async function getServicios(): Promise<ServicioRow[]> {
   try {
     const supabase = await createSupabaseServerClient()
-
     const { data, error } = await supabase
       .from('servicios')
       .select(`${COLUMNAS_SERVICIO}, publicado`)
@@ -112,21 +74,76 @@ export async function getServicios(): Promise<Servicio[]> {
       return []
     }
 
-    return (data ?? []) as Servicio[]
+    return (data ?? []) as ServicioRow[]
   } catch (error) {
     console.error('[servicios] Error inesperado al leer servicios (admin):', error)
     return []
   }
 }
-
-export async function upsertServicio(
-  data: Omit<Servicio, 'id' | 'slug'> & { id?: string }
-): Promise<{ success: boolean }> {
-  console.log('[mock] upsertServicio', data)
-  return { success: true }
+function slugifyServicio(nombre: string): string {
+  return nombre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
-export async function deleteServicio(id: string): Promise<{ success: boolean }> {
-  console.log('[mock] deleteServicio', id)
-  return { success: true }
+export async function upsertServicio(
+  data: Servicio,
+): Promise<ResultadoEscritura> {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const payload = {
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      precio: data.precio,
+      duracion_minutos: data.duracion_minutos,
+      imagen_url: data.imagen_url,
+      imagekit_file_id: data.imagekit_file_id,
+      publicado: data.publicado,
+    }
+    const query = data.id
+      ? supabase.from('servicios').update(payload).eq('id', data.id)
+      : supabase
+          .from('servicios')
+          .insert({ ...payload, slug: slugifyServicio(data.nombre) })
+
+    const { error } = await query
+    if (error) {
+      console.error('[servicios] Error al guardar el servicio:', error.message)
+      return { success: false, error: 'No se pudo guardar el servicio.' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('[servicios] Error inesperado al guardar el servicio:', error)
+    return { success: false, error: 'No se pudo guardar el servicio.' }
+  }
+}
+
+export async function deleteServicio(
+  id: string,
+): Promise<ResultadoEscritura> {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { error } = await supabase.from('servicios').delete().eq('id', id)
+
+    if (error) {
+      console.error('[servicios] Error al eliminar el servicio:', error.message)
+      if (error.code === '23503') {
+        return {
+          success: false,
+          error:
+            'No se puede eliminar: hay citas que referencian este servicio.',
+        }
+      }
+      return { success: false, error: 'No se pudo eliminar el servicio.' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('[servicios] Error inesperado al eliminar el servicio:', error)
+    return { success: false, error: 'No se pudo eliminar el servicio.' }
+  }
 }
