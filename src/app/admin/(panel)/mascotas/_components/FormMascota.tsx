@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
@@ -14,15 +14,11 @@ interface Props { mascota?: Mascota; onSuccess: () => void }
 
 export default function FormMascota({ mascota, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarMascota, null)
-  const fotoUrlRef = useRef<HTMLInputElement>(null)
-  const imagekitFileIdRef = useRef<HTMLInputElement>(null)
-  const [previewUrl, setPreviewUrl] = useState(mascota?.foto_url ?? '')
-
-  const handleUploaded = (url: string, fileId: string) => {
-    setPreviewUrl(url)
-    if (fotoUrlRef.current) fotoUrlRef.current.value = url
-    if (imagekitFileIdRef.current) imagekitFileIdRef.current.value = fileId
-  }
+  const [fotoUrl, setFotoUrl] = useState(mascota?.foto_url ?? '')
+  const [imagekitFileId, setImagekitFileId] = useState(
+    mascota?.imagekit_file_id ?? '',
+  )
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -31,17 +27,12 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
-      <input
-        type="hidden"
-        name="foto_url"
-        ref={fotoUrlRef}
-        defaultValue={mascota?.foto_url ?? ''}
-      />
+      <input type="hidden" name="foto_url" value={fotoUrl} readOnly />
       <input
         type="hidden"
         name="imagekit_file_id"
-        ref={imagekitFileIdRef}
-        defaultValue={mascota?.imagekit_file_id ?? ''}
+        value={imagekitFileId}
+        readOnly
       />
 
       <Input
@@ -79,8 +70,12 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
 
       <SubirFoto
         label="Foto de la mascota"
-        currentUrl={previewUrl}
-        onUploaded={handleUploaded}
+        currentUrl={fotoUrl}
+        onUploaded={(url, fileId) => {
+          setFotoUrl(url)
+          setImagekitFileId(fileId)
+        }}
+        onUploadingChange={setIsUploading}
       />
 
       <div className="flex flex-col gap-1.5">
@@ -105,7 +100,11 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       )}
 
       <div className="flex gap-3 pt-2 border-t border-border">
-        <Button type="submit" loading={isPending} disabled={isPending}>
+        <Button
+          type="submit"
+          loading={isPending}
+          disabled={isPending || isUploading}
+        >
           {mascota ? 'Guardar cambios' : 'Crear mascota'}
         </Button>
       </div>

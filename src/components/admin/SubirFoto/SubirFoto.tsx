@@ -6,6 +6,7 @@ import { useImageKitUpload } from '@/hooks/useImageKitUpload'
 interface Props {
   currentUrl?: string | null
   onUploaded: (url: string, fileId: string) => void
+  onUploadingChange?: (uploading: boolean) => void
   label?: string
 }
 
@@ -16,6 +17,7 @@ interface Props {
 export default function SubirFoto({
   currentUrl,
   onUploaded,
+  onUploadingChange,
   label = 'Imagen',
 }: Props) {
   const { uploadFile, isUploading, progress, error } = useImageKitUpload()
@@ -25,6 +27,10 @@ export default function SubirFoto({
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
   const objectUrlRef = useRef<string | null>(null)
   const inputId = useId()
+
+  useEffect(() => {
+    onUploadingChange?.(isUploading)
+  }, [isUploading, onUploadingChange])
 
   useEffect(() => {
     return () => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
@@ -14,15 +14,11 @@ interface Props {
 
 export default function FormServicio({ servicio, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarServicio, null)
-  const imagenUrlRef = useRef<HTMLInputElement>(null)
-  const imagekitFileIdRef = useRef<HTMLInputElement>(null)
-  const [previewUrl, setPreviewUrl] = useState(servicio?.imagen_url ?? '')
-
-  const handleUploaded = (url: string, fileId: string) => {
-    setPreviewUrl(url)
-    if (imagenUrlRef.current) imagenUrlRef.current.value = url
-    if (imagekitFileIdRef.current) imagekitFileIdRef.current.value = fileId
-  }
+  const [imagenUrl, setImagenUrl] = useState(servicio?.imagen_url ?? '')
+  const [imagekitFileId, setImagekitFileId] = useState(
+    servicio?.imagekit_file_id ?? '',
+  )
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -31,17 +27,12 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {servicio?.id && <input type="hidden" name="id" value={servicio.id} />}
-      <input
-        type="hidden"
-        name="imagen_url"
-        ref={imagenUrlRef}
-        defaultValue={servicio?.imagen_url ?? ''}
-      />
+      <input type="hidden" name="imagen_url" value={imagenUrl} readOnly />
       <input
         type="hidden"
         name="imagekit_file_id"
-        ref={imagekitFileIdRef}
-        defaultValue={servicio?.imagekit_file_id ?? ''}
+        value={imagekitFileId}
+        readOnly
       />
 
       <Input
@@ -84,8 +75,12 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
 
       <SubirFoto
         label="Imagen del servicio"
-        currentUrl={previewUrl}
-        onUploaded={handleUploaded}
+        currentUrl={imagenUrl}
+        onUploaded={(url, fileId) => {
+          setImagenUrl(url)
+          setImagekitFileId(fileId)
+        }}
+        onUploadingChange={setIsUploading}
       />
 
       <div className="flex flex-col gap-1.5">
@@ -107,7 +102,11 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       )}
 
       <div className="flex gap-3 pt-2 border-t border-border">
-        <Button type="submit" loading={isPending} disabled={isPending}>
+        <Button
+          type="submit"
+          loading={isPending}
+          disabled={isPending || isUploading}
+        >
           {servicio ? 'Guardar cambios' : 'Crear servicio'}
         </Button>
       </div>
