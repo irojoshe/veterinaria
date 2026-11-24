@@ -1,9 +1,10 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
+import CamposMascota from './CamposMascota'
 import { guardarMascota } from '../actions'
 import type { Mascota } from '@/lib/types'
 
@@ -13,10 +14,15 @@ interface Props { mascota?: Mascota; onSuccess: () => void }
 
 export default function FormMascota({ mascota, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarMascota, null)
-  const [fotoUrl, setFotoUrl] = useState(mascota?.foto_url ?? '')
-  const [imagekitFileId, setImagekitFileId] = useState(
-    mascota?.imagekit_file_id ?? '',
-  )
+  const fotoUrlRef = useRef<HTMLInputElement>(null)
+  const imagekitFileIdRef = useRef<HTMLInputElement>(null)
+  const [previewUrl, setPreviewUrl] = useState(mascota?.foto_url ?? '')
+
+  const handleUploaded = (url: string, fileId: string) => {
+    setPreviewUrl(url)
+    if (fotoUrlRef.current) fotoUrlRef.current.value = url
+    if (imagekitFileIdRef.current) imagekitFileIdRef.current.value = fileId
+  }
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -25,45 +31,17 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
-      <input type="hidden" name="foto_url" value={fotoUrl} />
-      <input type="hidden" name="imagekit_file_id" value={imagekitFileId} />
-      <input type="hidden" name="sexo" defaultValue={mascota?.sexo ?? ''} />
       <input
         type="hidden"
-        name="fecha_nacimiento"
-        defaultValue={mascota?.fecha_nacimiento ?? ''}
-      />
-      <input type="hidden" name="precio" defaultValue={mascota?.precio ?? 0} />
-      <input type="hidden" name="historia" defaultValue={mascota?.historia ?? ''} />
-      <input
-        type="hidden"
-        name="estado_adopcion"
-        defaultValue={mascota?.estado_adopcion ?? 'disponible'}
+        name="foto_url"
+        ref={fotoUrlRef}
+        defaultValue={mascota?.foto_url ?? ''}
       />
       <input
         type="hidden"
-        name="vacunado"
-        defaultValue={mascota?.vacunado ? 'true' : 'false'}
-      />
-      <input
-        type="hidden"
-        name="esterilizado"
-        defaultValue={mascota?.esterilizado ? 'true' : 'false'}
-      />
-      <input
-        type="hidden"
-        name="microchip"
-        defaultValue={mascota?.microchip ? 'true' : 'false'}
-      />
-      <input
-        type="hidden"
-        name="compatible_ninos"
-        defaultValue={mascota?.compatible_ninos ? 'true' : 'false'}
-      />
-      <input
-        type="hidden"
-        name="compatible_mascotas"
-        defaultValue={mascota?.compatible_mascotas ? 'true' : 'false'}
+        name="imagekit_file_id"
+        ref={imagekitFileIdRef}
+        defaultValue={mascota?.imagekit_file_id ?? ''}
       />
 
       <Input
@@ -97,13 +75,12 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
         />
       </div>
 
+      <CamposMascota mascota={mascota} />
+
       <SubirFoto
         label="Foto de la mascota"
-        currentUrl={fotoUrl}
-        onUploaded={(url, fileId) => {
-          setFotoUrl(url)
-          setImagekitFileId(fileId)
-        }}
+        currentUrl={previewUrl}
+        onUploaded={handleUploaded}
       />
 
       <div className="flex flex-col gap-1.5">

@@ -5,7 +5,7 @@ import {
 } from '@/lib/supabase/server'
 import {
   deleteReplacedImageKitFile,
-  getPreviousImageKitFileId,
+  getPreviousImageKitState,
 } from '@/lib/imagekit/server'
 import type { Negocio } from '@/lib/types'
 
@@ -89,6 +89,61 @@ export async function actualizarNegocio(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = await createSupabaseServerClient()
+
+    const { data: fila, error: selectError } = await supabase
+      .from('negocio')
+      .select('id, logo_url, imagekit_file_id')
+      .limit(1)
+      .maybeSingle()
+
+    if (selectError) {
+      console.error(
+        '[negocio] Error al buscar el registro:',
+        selectError.code,
+        selectError.message,
+      )
+      return { success: false, error: ERROR_ACTUALIZACION }
+    }
+
+    if (!fila) {
+      const payload: Negocio = {
+        nombre: data.nombre,
+        descripcion: data.descripcion,
+        direccion: data.direccion,
+        telefono: data.telefono,
+        email: data.email,
+        whatsapp: data.whatsapp,
+        horario: data.horario,
+        mapa_url: data.mapa_url,
+        logo_url: data.logo_url,
+        imagekit_file_id: data.imagekit_file_id,
+      }
+
+      const { error: insertError } = await supabase
+        .from('negocio')
+        .insert(payload)
+        .select('id')
+        .single()
+
+      if (insertError) {
+        console.error(
+          '[negocio] Error al crear el registro:',
+          insertError.code,
+          insertError.message,
+        )
+        return { success: false, error: ERROR_ACTUALIZACION }
+      }
+
+      return { success: true }
+    }
+
+    const previous = await getPreviousImageKitState(
+      supabase,
+      'negocio',
+      fila.id,
+      'logo_url',
+    )
+
     const payload: Negocio = {
       nombre: data.nombre,
       descripcion: data.descripcion,
@@ -98,34 +153,8 @@ export async function actualizarNegocio(
       whatsapp: data.whatsapp,
       horario: data.horario,
       mapa_url: data.mapa_url,
-      logo_url: data.logo_url,
-      imagekit_file_id: data.imagekit_file_id,
-    }
-
-    const { data: fila, error: selectError } = await supabase
-      .from('negocio')
-      .select('id, imagekit_file_id')
-      .limit(1)
-      .maybeSingle()
-
-    if (selectError) {
-      console.error('[negocio] Error al buscar el registro:', selectError.message)
-      return { success: false, error: ERROR_ACTUALIZACION }
-    }
-
-    if (!fila) {
-      const { error: insertError } = await supabase
-        .from('negocio')
-        .insert(payload)
-        .select('id')
-        .single()
-
-      if (insertError) {
-        console.error('[negocio] Error al crear el registro:', insertError.message)
-        return { success: false, error: ERROR_ACTUALIZACION }
-      }
-
-      return { success: true }
+      logo_url: data.logo_url || previous.imageUrl,
+      imagekit_file_id: data.imagekit_file_id || previous.fileId,
     }
 
     const { error: updateError } = await supabase
@@ -134,14 +163,15 @@ export async function actualizarNegocio(
       .eq('id', fila.id)
 
     if (updateError) {
-      console.error('[negocio] Error al actualizar el registro:', updateError.message)
+      console.error(
+        '[negocio] Error al actualizar el registro:',
+        updateError.code,
+        updateError.message,
+      )
       return { success: false, error: ERROR_ACTUALIZACION }
     }
 
-    await deleteReplacedImageKitFile(
-      fila.imagekit_file_id,
-      data.imagekit_file_id,
-    )
+    await deleteReplacedImageKitFile(previous.fileId, payload.imagekit_file_id)
 
     return { success: true }
   } catch (error) {

@@ -1,11 +1,12 @@
 import { unstable_cache } from 'next/cache'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import {
   createSupabasePublicServerClient,
   createSupabaseServerClient,
 } from '@/lib/supabase/server'
 import {
   deleteReplacedImageKitFile,
-  getPreviousImageKitFileId,
+  getPreviousImageKitState,
 } from '@/lib/imagekit/server'
 import type { Servicio, ServicioPublico, ServicioRow } from '@/lib/types'
 
@@ -93,42 +94,103 @@ function slugifyServicio(nombre: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+/**
+ * `slug` is UNIQUE: a repeated name gets a numeric suffix instead of failing
+ * the insert with a constraint violation.
+ */
+async function resolveSlugUnico(
+  supabase: SupabaseClient<any>,
+  slug: string,
+): Promise<string> {
+  const { data, error } = await supabase
+    .from('servicios')
+    .select('slug')
+    .like('slug', `${slug}%`)
+
+  if (error) {
+    console.error('[servicios] Error al calcular el slug:', error.message)
+    return slug
+  }
+
+  const existentes = new Set((data ?? []).map((row) => row.slug as string))
+  if (!existentes.has(slug)) return slug
+
+  let sufijo = 2
+  while (existentes.has(`${slug}-${sufijo}`)) sufijo += 1
+  return `${slug}-${sufijo}`
+}
+
 export async function upsertServicio(
   data: Servicio,
 ): Promise<ResultadoEscritura> {
   try {
     const supabase = await createSupabaseServerClient()
+
+    const previous = data.id
+      ? await getPreviousImageKitState(supabase, 'servicios', data.id, 'imagen_url')
+      : { imageUrl: null, fileId: null }
+
+    // An empty upload keeps the stored photo instead of wiping it.
+    const imagenUrl = data.imagen_url ?? previous.imageUrl
+    const fileId = data.imagekit_file_id ?? previous.fileId
+
     const payload = {
       nombre: data.nombre,
       descripcion: data.descripcion,
       precio: data.precio,
       duracion_minutos: data.duracion_minutos,
-      imagen_url: data.imagen_url,
-      imagekit_file_id: data.imagekit_file_id,
+      imagen_url: imagenUrl,
+      imagekit_file_id: fileId,
       publicado: data.publicado,
     }
-    const previousFileId = data.id
-      ? await getPreviousImageKitFileId(supabase, 'servicios', data.id)
-      : null
 
-    const query = data.id
-      ? supabase.from('servicios').update(payload).eq('id', data.id)
-      : supabase
-          .from('servicios')
-          .insert({ ...payload, slug: slugifyServicio(data.nombre) })
+    if (data.id) {
+      const { error } = await supabase
+        .from('servicios')
+        .update(payload)
+        .eq('id', data.id)
 
-    const { error } = await query
-    if (error) {
-      console.error('[servicios] Error al guardar el servicio:', error.message)
-      return { success: false, error: 'No se pudo guardar el servicio.' }
+      if (error) {
+        console.error(
+          '[servicios] Error al actualizar el servicio:',
+          error.code,
+          error.message,
+          error.details,
+        )
+        return {
+          success: false,
+          error: `No se pudo guardar el servicio (${error.code ?? 'sin código'}).`,
+        }
+      }
+    } else {
+      const slug = await resolveSlugUnico(supabase, slugifyServicio(data.nombre))
+      const { error } = await supabase
+        .from('servicios')
+        .insert({ ...payload, slug })
+
+      if (error) {
+        console.error(
+          '[servicios] Error al crear el servicio:',
+          error.code,
+          error.message,
+          error.details,
+        )
+        return {
+          success: false,
+          error: `No se pudo guardar el servicio (${error.code ?? 'sin código'}).`,
+        }
+      }
     }
 
-    await deleteReplacedImageKitFile(previousFileId, data.imagekit_file_id)
+    await deleteReplacedImageKitFile(previous.fileId, fileId)
 
     return { success: true }
   } catch (error) {
     console.error('[servicios] Error inesperado al guardar el servicio:', error)
-    return { success: false, error: 'No se pudo guardar el servicio.' }
+    return {
+      success: false,
+      error: 'Error inesperado al guardar el servicio.',
+    }
   }
 }
 

@@ -5,7 +5,7 @@ import {
 } from '@/lib/supabase/server'
 import {
   deleteReplacedImageKitFile,
-  getPreviousImageKitFileId,
+  getPreviousImageKitState,
 } from '@/lib/imagekit/server'
 import type { Mascota, MascotaPublica, MascotaRow } from '@/lib/types'
 
@@ -68,14 +68,23 @@ export async function upsertMascota(
 ): Promise<ResultadoEscritura> {
   try {
     const supabase = await createSupabaseServerClient()
+
+    const previous = data.id
+      ? await getPreviousImageKitState(supabase, 'mascotas', data.id, 'foto_url')
+      : { imageUrl: null, fileId: null }
+
+    // An empty upload keeps the stored photo instead of wiping it.
+    const fotoUrl = data.foto_url ?? previous.imageUrl
+    const fileId = data.imagekit_file_id ?? previous.fileId
+
     const payload = {
       nombre: data.nombre,
       especie: data.especie,
       raza: data.raza,
       sexo: data.sexo,
       fecha_nacimiento: data.fecha_nacimiento,
-      foto_url: data.foto_url,
-      imagekit_file_id: data.imagekit_file_id,
+      foto_url: fotoUrl,
+      imagekit_file_id: fileId,
       publicado: data.publicado,
       precio: data.precio,
       historia: data.historia,
@@ -86,26 +95,33 @@ export async function upsertMascota(
       compatible_ninos: data.compatible_ninos,
       compatible_mascotas: data.compatible_mascotas,
     }
-    const previousFileId = data.id
-      ? await getPreviousImageKitFileId(supabase, 'mascotas', data.id)
-      : null
-
     const query = data.id
       ? supabase.from('mascotas').update(payload).eq('id', data.id)
       : supabase.from('mascotas').insert(payload)
 
     const { error } = await query
     if (error) {
-      console.error('[mascotas] Error al guardar la mascota:', error.message)
-      return { success: false, error: 'No se pudo guardar la mascota.' }
+      console.error(
+        '[mascotas] Error al guardar la mascota:',
+        error.code,
+        error.message,
+        error.details,
+      )
+      return {
+        success: false,
+        error: `No se pudo guardar la mascota (${error.code ?? 'sin código'}).`,
+      }
     }
 
-    await deleteReplacedImageKitFile(previousFileId, data.imagekit_file_id)
+    await deleteReplacedImageKitFile(previous.fileId, fileId)
 
     return { success: true }
   } catch (error) {
     console.error('[mascotas] Error inesperado al guardar la mascota:', error)
-    return { success: false, error: 'No se pudo guardar la mascota.' }
+    return {
+      success: false,
+      error: 'Error inesperado al guardar la mascota.',
+    }
   }
 }
 

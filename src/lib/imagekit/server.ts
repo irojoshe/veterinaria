@@ -45,19 +45,25 @@ export async function deleteImageKitFile(fileId: string): Promise<void> {
   await getImageKitClient().deleteFile(fileId)
 }
 
+export interface PreviousImageKitState {
+  imageUrl: string | null
+  fileId: string | null
+}
+
 /**
- * Reads the ImageKit file id currently linked to a record.
- * A failed read returns null so the cleanup never blocks a save.
+ * Reads the image URL and ImageKit file id currently linked to a record.
+ * A failed read returns empty state so the cleanup never blocks a save.
  */
-export async function getPreviousImageKitFileId(
+export async function getPreviousImageKitState(
   supabase: SupabaseClient<any>,
   table: 'servicios' | 'mascotas' | 'negocio',
   id: string,
-): Promise<string | null> {
+  imageColumn: 'imagen_url' | 'foto_url' | 'logo_url',
+): Promise<PreviousImageKitState> {
   try {
     const { data, error } = await supabase
       .from(table)
-      .select('imagekit_file_id')
+      .select(`${imageColumn}, imagekit_file_id`)
       .eq('id', id)
       .maybeSingle()
 
@@ -66,16 +72,21 @@ export async function getPreviousImageKitFileId(
         `[imagekit] Error al leer el archivo anterior de ${table}:`,
         error.message,
       )
-      return null
+      return { imageUrl: null, fileId: null }
     }
 
-    return data?.imagekit_file_id ?? null
+    const row = data as unknown as Record<string, unknown> | null
+
+    return {
+      imageUrl: (row?.[imageColumn] as string | null) ?? null,
+      fileId: (row?.imagekit_file_id as string | null) ?? null,
+    }
   } catch (error) {
     console.error(
       `[imagekit] Error inesperado al leer el archivo anterior de ${table}:`,
       error,
     )
-    return null
+    return { imageUrl: null, fileId: null }
   }
 }
 

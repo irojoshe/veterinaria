@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
@@ -14,10 +14,15 @@ interface Props {
 
 export default function FormServicio({ servicio, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarServicio, null)
-  const [imagenUrl, setImagenUrl] = useState(servicio?.imagen_url ?? '')
-  const [imagekitFileId, setImagekitFileId] = useState(
-    servicio?.imagekit_file_id ?? '',
-  )
+  const imagenUrlRef = useRef<HTMLInputElement>(null)
+  const imagekitFileIdRef = useRef<HTMLInputElement>(null)
+  const [previewUrl, setPreviewUrl] = useState(servicio?.imagen_url ?? '')
+
+  const handleUploaded = (url: string, fileId: string) => {
+    setPreviewUrl(url)
+    if (imagenUrlRef.current) imagenUrlRef.current.value = url
+    if (imagekitFileIdRef.current) imagekitFileIdRef.current.value = fileId
+  }
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -26,8 +31,18 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {servicio?.id && <input type="hidden" name="id" value={servicio.id} />}
-      <input type="hidden" name="imagen_url" value={imagenUrl} />
-      <input type="hidden" name="imagekit_file_id" value={imagekitFileId} />
+      <input
+        type="hidden"
+        name="imagen_url"
+        ref={imagenUrlRef}
+        defaultValue={servicio?.imagen_url ?? ''}
+      />
+      <input
+        type="hidden"
+        name="imagekit_file_id"
+        ref={imagekitFileIdRef}
+        defaultValue={servicio?.imagekit_file_id ?? ''}
+      />
 
       <Input
         label="Nombre del servicio *"
@@ -69,11 +84,8 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
 
       <SubirFoto
         label="Imagen del servicio"
-        currentUrl={imagenUrl}
-        onUploaded={(url, fileId) => {
-          setImagenUrl(url)
-          setImagekitFileId(fileId)
-        }}
+        currentUrl={previewUrl}
+        onUploaded={handleUploaded}
       />
 
       <div className="flex flex-col gap-1.5">

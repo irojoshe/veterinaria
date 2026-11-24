@@ -25,7 +25,7 @@ export interface Mascota {
   nombre: string
   especie: string
   raza: string
-  sexo: string
+  sexo: string | null
   fecha_nacimiento: string | null
   foto_url: string | null
   imagekit_file_id: string | null
