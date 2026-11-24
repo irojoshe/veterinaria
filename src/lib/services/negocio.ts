@@ -3,6 +3,10 @@ import {
   createSupabasePublicServerClient,
   createSupabaseServerClient,
 } from '@/lib/supabase/server'
+import {
+  deleteReplacedImageKitFile,
+  getPreviousImageKitFileId,
+} from '@/lib/imagekit/server'
 import type { Negocio } from '@/lib/types'
 
 /**
@@ -10,7 +14,7 @@ import type { Negocio } from '@/lib/types'
  * Ver docs/patterns/data-fetching.md.
  */
 const COLUMNAS_NEGOCIO =
-  'nombre, descripcion, direccion, telefono, email, whatsapp, horario, mapa_url'
+  'nombre, descripcion, direccion, telefono, email, whatsapp, horario, mapa_url, logo_url, imagekit_file_id'
 
 /**
  * Valores por defecto mientras la fila de `negocio` no esté completa.
@@ -26,6 +30,8 @@ const NEGOCIO_POR_DEFECTO: Negocio = {
   horario: 'Lun–Vie 09:00–19:00 · Sáb 10:00–14:00 · Dom Cerrado',
   whatsapp: '+34900123456',
   mapa_url: null,
+  logo_url: null,
+  imagekit_file_id: null,
 }
 
 /**
@@ -63,6 +69,9 @@ export const getNegocio = unstable_cache(
         whatsapp: data.whatsapp || NEGOCIO_POR_DEFECTO.whatsapp,
         horario: data.horario || NEGOCIO_POR_DEFECTO.horario,
         mapa_url: data.mapa_url || NEGOCIO_POR_DEFECTO.mapa_url,
+        logo_url: data.logo_url || NEGOCIO_POR_DEFECTO.logo_url,
+        imagekit_file_id:
+          data.imagekit_file_id || NEGOCIO_POR_DEFECTO.imagekit_file_id,
       }
     } catch (error) {
       console.error('[negocio] Error inesperado al leer la clínica:', error)
@@ -89,11 +98,13 @@ export async function actualizarNegocio(
       whatsapp: data.whatsapp,
       horario: data.horario,
       mapa_url: data.mapa_url,
+      logo_url: data.logo_url,
+      imagekit_file_id: data.imagekit_file_id,
     }
 
     const { data: fila, error: selectError } = await supabase
       .from('negocio')
-      .select('id')
+      .select('id, imagekit_file_id')
       .limit(1)
       .maybeSingle()
 
@@ -126,6 +137,11 @@ export async function actualizarNegocio(
       console.error('[negocio] Error al actualizar el registro:', updateError.message)
       return { success: false, error: ERROR_ACTUALIZACION }
     }
+
+    await deleteReplacedImageKitFile(
+      fila.imagekit_file_id,
+      data.imagekit_file_id,
+    )
 
     return { success: true }
   } catch (error) {

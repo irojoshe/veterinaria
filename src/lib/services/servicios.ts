@@ -3,6 +3,10 @@ import {
   createSupabasePublicServerClient,
   createSupabaseServerClient,
 } from '@/lib/supabase/server'
+import {
+  deleteReplacedImageKitFile,
+  getPreviousImageKitFileId,
+} from '@/lib/imagekit/server'
 import type { Servicio, ServicioPublico, ServicioRow } from '@/lib/types'
 
 const COLUMNAS_SERVICIO =
@@ -103,6 +107,10 @@ export async function upsertServicio(
       imagekit_file_id: data.imagekit_file_id,
       publicado: data.publicado,
     }
+    const previousFileId = data.id
+      ? await getPreviousImageKitFileId(supabase, 'servicios', data.id)
+      : null
+
     const query = data.id
       ? supabase.from('servicios').update(payload).eq('id', data.id)
       : supabase
@@ -114,6 +122,8 @@ export async function upsertServicio(
       console.error('[servicios] Error al guardar el servicio:', error.message)
       return { success: false, error: 'No se pudo guardar el servicio.' }
     }
+
+    await deleteReplacedImageKitFile(previousFileId, data.imagekit_file_id)
 
     return { success: true }
   } catch (error) {

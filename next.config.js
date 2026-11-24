@@ -20,6 +20,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'clinicaveterinarium.es' },
       // CloudFront (fotos subidas por clientes/admin)
       { protocol: 'https', hostname: '**.cloudfront.net' },
+      // ImageKit (fotos subidas desde el panel de administracion)
+      { protocol: 'https', hostname: 'ik.imagekit.io' },
       // Google rota entre tbn0..tbn3 segun el resultado; el comodin cubre todos.
       { protocol: 'https', hostname: '**.gstatic.com' },
 

@@ -1,8 +1,9 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import SubirFoto from '@/components/admin/SubirFoto'
 import { guardarMascota } from '../actions'
 import type { Mascota } from '@/lib/types'
 
@@ -12,6 +13,10 @@ interface Props { mascota?: Mascota; onSuccess: () => void }
 
 export default function FormMascota({ mascota, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarMascota, null)
+  const [fotoUrl, setFotoUrl] = useState(mascota?.foto_url ?? '')
+  const [imagekitFileId, setImagekitFileId] = useState(
+    mascota?.imagekit_file_id ?? '',
+  )
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -20,6 +25,8 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
+      <input type="hidden" name="foto_url" value={fotoUrl} />
+      <input type="hidden" name="imagekit_file_id" value={imagekitFileId} />
       <input type="hidden" name="sexo" defaultValue={mascota?.sexo ?? ''} />
       <input
         type="hidden"
@@ -90,12 +97,13 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
         />
       </div>
 
-      <Input
-        label="URL de la foto (opcional)"
-        name="foto_url"
-        type="url"
-        placeholder="https://images.example.com/mascota.jpg"
-        defaultValue={mascota?.foto_url ?? ''}
+      <SubirFoto
+        label="Foto de la mascota"
+        currentUrl={fotoUrl}
+        onUploaded={(url, fileId) => {
+          setFotoUrl(url)
+          setImagekitFileId(fileId)
+        }}
       />
 
       <div className="flex flex-col gap-1.5">

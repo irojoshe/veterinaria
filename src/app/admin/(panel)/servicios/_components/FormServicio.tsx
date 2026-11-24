@@ -1,8 +1,9 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import SubirFoto from '@/components/admin/SubirFoto'
 import { guardarServicio } from '../actions'
 import type { Servicio } from '@/lib/types'
 
@@ -13,6 +14,10 @@ interface Props {
 
 export default function FormServicio({ servicio, onSuccess }: Props) {
   const [state, formAction, isPending] = useActionState(guardarServicio, null)
+  const [imagenUrl, setImagenUrl] = useState(servicio?.imagen_url ?? '')
+  const [imagekitFileId, setImagekitFileId] = useState(
+    servicio?.imagekit_file_id ?? '',
+  )
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -21,13 +26,8 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {servicio?.id && <input type="hidden" name="id" value={servicio.id} />}
-      {servicio?.imagekit_file_id && (
-        <input
-          type="hidden"
-          name="imagekit_file_id"
-          defaultValue={servicio.imagekit_file_id}
-        />
-      )}
+      <input type="hidden" name="imagen_url" value={imagenUrl} />
+      <input type="hidden" name="imagekit_file_id" value={imagekitFileId} />
 
       <Input
         label="Nombre del servicio *"
@@ -67,12 +67,13 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
         />
       </div>
 
-      <Input
-        label="URL de la imagen (opcional)"
-        name="imagen_url"
-        type="url"
-        placeholder="https://images.example.com/servicio.jpg"
-        defaultValue={servicio?.imagen_url ?? ''}
+      <SubirFoto
+        label="Imagen del servicio"
+        currentUrl={imagenUrl}
+        onUploaded={(url, fileId) => {
+          setImagenUrl(url)
+          setImagekitFileId(fileId)
+        }}
       />
 
       <div className="flex flex-col gap-1.5">

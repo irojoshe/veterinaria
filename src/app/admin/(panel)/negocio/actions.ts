@@ -20,6 +20,8 @@ const negocioSchema = z.object({
   whatsapp: z.string().trim().optional(),
   horario: z.string().trim().min(5, 'Indica el horario.'),
   mapa_url: optionalUrlSchema,
+  logo_url: optionalUrlSchema,
+  imagekit_file_id: z.string().nullable(),
 })
 
 export interface ActionResult {
@@ -48,6 +50,8 @@ export async function actualizarNegocio(
     whatsapp: formData.get('whatsapp') ?? undefined,
     horario: formData.get('horario'),
     mapa_url: formData.get('mapa_url') ?? '',
+    logo_url: formData.get('logo_url') || '',
+    imagekit_file_id: formData.get('imagekit_file_id') || null,
   })
 
   if (!parsed.success) {
@@ -63,6 +67,8 @@ export async function actualizarNegocio(
     whatsapp: parsed.data.whatsapp || null,
     horario: parsed.data.horario,
     mapa_url: parsed.data.mapa_url || null,
+    logo_url: parsed.data.logo_url || null,
+    imagekit_file_id: parsed.data.imagekit_file_id,
   }
   const result = await guardarNegocio(payload)
 

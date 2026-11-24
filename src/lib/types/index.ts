@@ -28,6 +28,7 @@ export interface Mascota {
   sexo: string
   fecha_nacimiento: string | null
   foto_url: string | null
+  imagekit_file_id: string | null
   publicado: boolean
   precio: number
   historia: string | null
@@ -44,7 +45,10 @@ export interface Mascota {
  * See docs/patterns/data-fetching.md.
  */
 export type MascotaRow = Mascota & { id: string }
-export type MascotaPublica = Omit<Mascota, 'publicado' | 'id'> & { id: string }
+export type MascotaPublica = Omit<
+  Mascota,
+  'publicado' | 'id' | 'imagekit_file_id'
+> & { id: string }
 
 /**
  * Clinic business data. It reflects the `negocio` table and its complete schedule.
@@ -58,6 +62,8 @@ export interface Negocio {
   whatsapp: string | null
   horario: string
   mapa_url: string | null
+  logo_url: string | null
+  imagekit_file_id: string | null
 }
 
 export type EstadoCita = 'pendiente' | 'confirmada' | 'atendida' | 'cancelada'

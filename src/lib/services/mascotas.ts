@@ -3,13 +3,17 @@ import {
   createSupabasePublicServerClient,
   createSupabaseServerClient,
 } from '@/lib/supabase/server'
+import {
+  deleteReplacedImageKitFile,
+  getPreviousImageKitFileId,
+} from '@/lib/imagekit/server'
 import type { Mascota, MascotaPublica, MascotaRow } from '@/lib/types'
 
 const COLUMNAS_MASCOTA =
   'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, precio, historia, estado_adopcion, vacunado, esterilizado, microchip, compatible_ninos, compatible_mascotas'
 
 const COLUMNAS_MASCOTA_ADMIN =
-  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, publicado, precio, historia, estado_adopcion, vacunado, esterilizado, microchip, compatible_ninos, compatible_mascotas'
+  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, imagekit_file_id, publicado, precio, historia, estado_adopcion, vacunado, esterilizado, microchip, compatible_ninos, compatible_mascotas'
 
 type ResultadoEscritura = { success: boolean; error?: string }
 
@@ -71,6 +75,7 @@ export async function upsertMascota(
       sexo: data.sexo,
       fecha_nacimiento: data.fecha_nacimiento,
       foto_url: data.foto_url,
+      imagekit_file_id: data.imagekit_file_id,
       publicado: data.publicado,
       precio: data.precio,
       historia: data.historia,
@@ -81,6 +86,10 @@ export async function upsertMascota(
       compatible_ninos: data.compatible_ninos,
       compatible_mascotas: data.compatible_mascotas,
     }
+    const previousFileId = data.id
+      ? await getPreviousImageKitFileId(supabase, 'mascotas', data.id)
+      : null
+
     const query = data.id
       ? supabase.from('mascotas').update(payload).eq('id', data.id)
       : supabase.from('mascotas').insert(payload)
@@ -90,6 +99,8 @@ export async function upsertMascota(
       console.error('[mascotas] Error al guardar la mascota:', error.message)
       return { success: false, error: 'No se pudo guardar la mascota.' }
     }
+
+    await deleteReplacedImageKitFile(previousFileId, data.imagekit_file_id)
 
     return { success: true }
   } catch (error) {

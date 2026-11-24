@@ -4,6 +4,8 @@ import { useActionState, useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { actualizarNegocio, type ActionResult } from '../actions'
+import SubirFoto from '@/components/admin/SubirFoto'
+import TextareaField from './TextareaField'
 import type { Negocio } from '@/lib/types'
 
 interface Props {
@@ -16,6 +18,10 @@ export default function FormNegocio({ negocio }: Props) {
     null,
   )
   const [guardado, setGuardado] = useState(false)
+  const [logoUrl, setLogoUrl] = useState(negocio.logo_url ?? '')
+  const [imagekitFileId, setImagekitFileId] = useState(
+    negocio.imagekit_file_id ?? '',
+  )
 
   useEffect(() => {
     if (state?.success) setGuardado(true)
@@ -86,6 +92,18 @@ export default function FormNegocio({ negocio }: Props) {
         />
       </div>
 
+      <input type="hidden" name="logo_url" value={logoUrl} />
+      <input type="hidden" name="imagekit_file_id" value={imagekitFileId} />
+
+      <SubirFoto
+        label="Logo de la clínica"
+        currentUrl={logoUrl}
+        onUploaded={(url, fileId) => {
+          setLogoUrl(url)
+          setImagekitFileId(fileId)
+        }}
+      />
+
       {state && !state.success && (
         <p role="alert" className="text-12 text-status-cancelled">
           {state.error}
@@ -104,39 +122,5 @@ export default function FormNegocio({ negocio }: Props) {
         </Button>
       </div>
     </form>
-  )
-}
-
-function TextareaField({
-  id,
-  label,
-  name,
-  defaultValue,
-  rows,
-  helperText,
-}: {
-  id: string
-  label: string
-  name: string
-  defaultValue: string
-  rows: number
-  helperText?: string
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-13 font-semibold text-text-main">
-        {label}
-      </label>
-      <textarea
-        id={id}
-        name={name}
-        rows={rows}
-        defaultValue={defaultValue}
-        className="w-full px-3.5 py-3 rounded-md text-14 text-text-main
-                   bg-background-surface border border-border outline-none resize-y
-                   focus:ring-2 focus:ring-primary"
-      />
-      {helperText && <p className="text-11 text-text-muted">{helperText}</p>}
-    </div>
   )
 }
