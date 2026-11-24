@@ -74,6 +74,19 @@ quedaban huérfanos en ImageKit al reemplazar una foto.
 - [x] **T7 — Caché e imágenes.** `updateTag('servicios' | 'mascotas' |
       'negocio')` tras un guardado exitoso; `ik.imagekit.io` agregado a
       `images.remotePatterns`.
+- [x] **T8 — Auditoría del guardado de mascotas.** `sexo`, `fecha_nacimiento`,
+      `precio`, `historia`, `estado_adopcion` y los cinco booleanos eran hidden
+      inputs con valores por defecto vacíos: `sexo=''` violaba
+      `mascotas_sexo_check` y `fecha_nacimiento=''` no era un `date` válido, así
+      que el `INSERT`/`UPDATE` abortaba completo. Ahora son campos reales en
+      `CamposMascota.tsx`, validados con Zod (`src/lib/validations/mascota.ts`),
+      normalizando `''` a `NULL`.
+- [x] **T9 — Auditoría de la persistencia de la imagen.** Los hidden inputs de
+      `foto_url` / `imagen_url` / `imagekit_file_id` eran controlados por estado
+      de React, de modo que el `FormData` podía llegar vacío al hacer submit.
+      Ahora son uncontrolled (`defaultValue` + `ref`) y el callback de subida
+      escribe el valor imperativamente; los services conservan la imagen
+      anterior cuando el campo llega vacío.
 
 ## Criterios de aceptación
 
@@ -93,6 +106,8 @@ quedaban huérfanos en ImageKit al reemplazar una foto.
 | Lectura estructural (privada key, hidden inputs, `updateTag`, remotePatterns) | ok |
 | `next dev` / `next build` | **no ejecutables en WSL** (SIGBUS) — pendiente en Windows |
 | Prueba real de subida contra ImageKit | **pendiente** (requiere sesión de admin en Windows) |
+| `npx tsc --noEmit` (auditoría T8/T9) | exit 0 |
+| Lectura estructural de la auditoría (hidden inputs de imagen uncontrolled, `CamposMascota`, fallback de imagen en services) | ok |
 
 ## Progreso y evidencia
 
@@ -108,6 +123,35 @@ Detalles de la API que importan:
 - `npm install` en WSL poda los bindings nativos de Windows
   (`lightningcss`, `@next/swc`, `@tailwindcss/oxide`, `@img/sharp`,
   `@unrs/resolver`): se restauraron con `npm pack` + `tar` sin `npm install`.
+
+### Auditoría de corrección (T8/T9)
+
+Commit `04b8b2d` — `fix(admin): corrige el guardado de mascotas y la persistencia
+de la imagen en servicios` (12 archivos, +608 / -283).
+
+Causas raíz verificadas:
+
+1. `mascotas.sexo` tiene CHECK `sexo IS NULL OR sexo = ANY (ARRAY['macho',
+   'hembra']))` y el formulario enviaba `''`; `fecha_nacimiento` es `date` y
+   recibía `''`. Cualquiera de los dos abortaba el `INSERT`/`UPDATE` completo.
+2. La imagen no se persistía porque los hidden inputs eran **controlados**
+   (`value={estado}`): con `useActionState` el submit podía serializar valores
+   vacíos o desfasados, y el service no distinguía "sin imagen" de "borrar
+   imagen".
+3. `servicios.slug` es `UNIQUE`: un slug duplicado hacía fallar el `INSERT` y
+   el error genérico escondía la causa; ahora `resolveSlugUnico()` lo resuelve
+   antes de escribir.
+
+Archivos de la auditoría: `mascotas/actions.ts`, `servicios/actions.ts`,
+`src/lib/validations/mascota.ts`, `src/lib/validations/servicio.ts`,
+`CamposMascota.tsx`, `FormMascota.tsx`, `FormServicio.tsx`,
+`src/lib/services/{mascotas,servicios,negocio}.ts`,
+`src/lib/imagekit/server.ts` (`getPreviousImageKitState` +
+`deleteReplacedImageKitFile`) y `src/lib/types/index.ts`
+(`Mascota.sexo: string | null`).
+
+No se ejecutó ninguna escritura contra la base de datos: el esquema y el
+contenido actual se verificaron solo con lecturas PostgREST.
 
 ## Siguiente paso
 
