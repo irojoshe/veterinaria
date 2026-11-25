@@ -1,27 +1,27 @@
 import { unstable_cache } from 'next/cache'
-import { createSupabasePublicServerClient } from '@/lib/supabase/server'
-import type { Mascota, MascotaPublica } from '@/lib/types'
+import {
+  createSupabasePublicServerClient,
+  createSupabaseServerClient,
+} from '@/lib/supabase/server'
+import {
+  deleteReplacedImageKitFile,
+  getPreviousImageKitState,
+} from '@/lib/imagekit/server'
+import type { Mascota, MascotaPublica, MascotaRow } from '@/lib/types'
 
-/**
- * Columnas públicas de la tabla `mascotas`: exactamente las que consume la
- * UI del catálogo. Ni una más (SELECT *) ni una menos.
- * Ver docs/patterns/data-fetching.md.
- */
 const COLUMNAS_MASCOTA =
   'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, precio, historia, estado_adopcion, vacunado, esterilizado, microchip, compatible_ninos, compatible_mascotas'
 
-/**
- * Mascotas publicadas para el catálogo público.
- *
- * Lectura cacheada con `unstable_cache`: es información pública y estable.
- * Usa el cliente sin cookies porque dentro de un scope de cache Next.js 16
- * lanza un error al leer cookies o headers.
- */
+const COLUMNAS_MASCOTA_ADMIN =
+  'id, nombre, especie, raza, sexo, fecha_nacimiento, foto_url, imagekit_file_id, publicado, precio, historia, estado_adopcion, vacunado, esterilizado, microchip, compatible_ninos, compatible_mascotas'
+
+type ResultadoEscritura = { success: boolean; error?: string }
+
+/** Public pet catalog cached by tag. */
 export const getMascotasPublicas = unstable_cache(
   async (): Promise<MascotaPublica[]> => {
     try {
       const supabase = createSupabasePublicServerClient()
-
       const { data, error } = await supabase
         .from('mascotas')
         .select(COLUMNAS_MASCOTA)
@@ -29,47 +29,126 @@ export const getMascotasPublicas = unstable_cache(
         .order('nombre')
 
       if (error) {
-        console.error(
-          '[mascotas] Error al leer mascotas publicadas:',
-          error.message,
-        )
+        console.error('[mascotas] Error al leer mascotas publicadas:', error.message)
         return []
       }
 
       return (data ?? []) as MascotaPublica[]
     } catch (error) {
-      console.error(
-        '[mascotas] Error inesperado al leer mascotas publicadas:',
-        error,
-      )
+      console.error('[mascotas] Error inesperado al leer mascotas publicadas:', error)
       return []
     }
   },
-  ['mascotas-publicas'],
+  ['mascotas-publicos'],
   { revalidate: 300, tags: ['mascotas'] },
 )
 
-const MASCOTAS_MOCK: Mascota[] = [
-  { id: '1', nombre: 'Luna',  especie: 'Perro', raza: 'Golden retriever', foto_url: null, slug: 'luna',  publica: true,  propietario: 'Lucía Torres' },
-  { id: '2', nombre: 'Nilo',  especie: 'Gato',  raza: 'Europeo común',    foto_url: null, slug: 'nilo',  publica: true,  propietario: 'Mateo Ruiz' },
-  { id: '3', nombre: 'Coco',  especie: 'Perro', raza: 'Beagle',           foto_url: null, slug: 'coco',  publica: true,  propietario: 'Elena Vidal' },
-  { id: '4', nombre: 'Oliva', especie: 'Conejo',raza: 'Belier',           foto_url: null, slug: 'oliva', publica: true,  propietario: 'Sara León' },
-  { id: '5', nombre: 'Milo',  especie: 'Gato',  raza: 'Europeo común',    foto_url: null, slug: 'milo',  publica: false, propietario: 'Daniel Gil' },
-  { id: '6', nombre: 'Bruna', especie: 'Perro', raza: 'Mestizo',          foto_url: null, slug: 'bruna', publica: false, propietario: undefined },
-]
+export async function getMascotas(): Promise<MascotaRow[]> {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('mascotas')
+      .select(COLUMNAS_MASCOTA_ADMIN)
+      .order('nombre')
 
-export async function getMascotas(): Promise<Mascota[]> {
-  return MASCOTAS_MOCK
+    if (error) {
+      console.error('[mascotas] getMascotas:', error.message)
+      return []
+    }
+
+    return (data ?? []) as MascotaRow[]
+  } catch (error) {
+    console.error('[mascotas] getMascotas:', error)
+    return []
+  }
 }
 
 export async function upsertMascota(
-  data: Omit<Mascota, 'id' | 'slug'> & { id?: string }
-): Promise<{ success: boolean }> {
-  console.log('[mock] upsertMascota', data)
-  return { success: true }
+  data: Mascota,
+  eliminarFoto = false,
+): Promise<ResultadoEscritura> {
+  try {
+    const supabase = await createSupabaseServerClient()
+
+    const previous = data.id
+      ? await getPreviousImageKitState(supabase, 'mascotas', data.id, 'foto_url')
+      : { imageUrl: null, fileId: null }
+
+    // An empty upload keeps the stored photo instead of wiping it.
+    // An explicit delete (eliminarFoto) wipes it.
+    const fotoUrl = eliminarFoto ? null : (data.foto_url ?? previous.imageUrl)
+    const fileId = eliminarFoto ? null : (data.imagekit_file_id ?? previous.fileId)
+
+    const payload = {
+      nombre: data.nombre,
+      especie: data.especie,
+      raza: data.raza,
+      sexo: data.sexo,
+      fecha_nacimiento: data.fecha_nacimiento,
+      foto_url: fotoUrl,
+      imagekit_file_id: fileId,
+      publicado: data.publicado,
+      precio: data.precio,
+      historia: data.historia,
+      estado_adopcion: data.estado_adopcion,
+      vacunado: data.vacunado,
+      esterilizado: data.esterilizado,
+      microchip: data.microchip,
+      compatible_ninos: data.compatible_ninos,
+      compatible_mascotas: data.compatible_mascotas,
+    }
+    const query = data.id
+      ? supabase.from('mascotas').update(payload).eq('id', data.id)
+      : supabase.from('mascotas').insert(payload)
+
+    const { error } = await query
+    if (error) {
+      console.error(
+        '[mascotas] Error al guardar la mascota:',
+        error.code,
+        error.message,
+        error.details,
+      )
+      return {
+        success: false,
+        error: `No se pudo guardar la mascota (${error.code ?? 'sin código'}).`,
+      }
+    }
+
+    await deleteReplacedImageKitFile(previous.fileId, fileId)
+
+    return { success: true }
+  } catch (error) {
+    console.error('[mascotas] Error inesperado al guardar la mascota:', error)
+    return {
+      success: false,
+      error: 'Error inesperado al guardar la mascota.',
+    }
+  }
 }
 
-export async function deleteMascota(id: string): Promise<{ success: boolean }> {
-  console.log('[mock] deleteMascota', id)
-  return { success: true }
+export async function deleteMascota(
+  id: string,
+): Promise<ResultadoEscritura> {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { error } = await supabase.from('mascotas').delete().eq('id', id)
+
+    if (error) {
+      console.error('[mascotas] Error al eliminar la mascota:', error.message)
+      if (error.code === '23503') {
+        return {
+          success: false,
+          error:
+            'No se puede eliminar: hay citas que referencian esta mascota.',
+        }
+      }
+      return { success: false, error: 'No se pudo eliminar la mascota.' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('[mascotas] Error inesperado al eliminar la mascota:', error)
+    return { success: false, error: 'No se pudo eliminar la mascota.' }
+  }
 }

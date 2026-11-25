@@ -34,3 +34,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# gentle-ai skill registry cache
+.atl/.skill-registry.cache.json

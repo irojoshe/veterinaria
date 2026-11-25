@@ -6,12 +6,14 @@ interface NavItemProps {
   label: string
   icon: React.ReactNode
   active: boolean
+  onClick?: () => void
 }
 
-export default function NavItem({ href, label, icon, active }: NavItemProps) {
+export default function NavItem({ href, label, icon, active, onClick }: NavItemProps) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       aria-current={active ? 'page' : undefined}
       className={clsx(
         'flex items-center gap-3 px-3 py-2.5 rounded-md text-13 transition-colors duration-150',

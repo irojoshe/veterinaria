@@ -1,5 +1,7 @@
 // Server Component — los datos del admin vendrán de la sesión en el futuro
 
+import AdminMobileMenu from './AdminMobileMenu'
+
 interface AdminTopbarProps {
   breadcrumb?: string
 }
@@ -7,12 +9,15 @@ interface AdminTopbarProps {
 export default function AdminTopbar({ breadcrumb = 'Administración' }: AdminTopbarProps) {
   return (
     <header
-      className="flex items-center justify-between px-9 bg-background-surface
+      className="flex items-center justify-between px-4 md:px-9 bg-background-surface
                  border-b border-border h-admin-header shrink-0 sticky top-0 z-30"
       aria-label="Barra de administración"
     >
       {/* Breadcrumb */}
-      <p className="text-13 text-text-muted">{breadcrumb}</p>
+      <div className="flex items-center gap-3">
+        <AdminMobileMenu />
+        <p className="text-13 text-text-muted">{breadcrumb}</p>
+      </div>
 
       {/* Admin info */}
       <div className="flex items-center gap-3.5">

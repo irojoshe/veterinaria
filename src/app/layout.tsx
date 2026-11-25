@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={dmSans.variable}>
-      <body>
+      <body className="overflow-x-hidden">
         <SupabaseProvider>
           {children}
         </SupabaseProvider>

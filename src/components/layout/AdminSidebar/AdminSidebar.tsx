@@ -3,21 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import NavItem from './NavItem'
-import {
-  IconDashboard, IconCalendar, IconStethoscope, IconPaw,
-  IconUsers, IconStore, IconMail, IconCheckCircle,
-} from './AdminIcons'
-
-const NAV_ITEMS = [
-  { href: '/admin',                label: 'Resumen',                 icon: <IconDashboard /> },
-  { href: '/admin/citas',          label: 'Citas',                   icon: <IconCalendar /> },
-  { href: '/admin/servicios',      label: 'Servicios',               icon: <IconStethoscope /> },
-  { href: '/admin/mascotas',       label: 'Mascotas',                icon: <IconPaw /> },
-  { href: '/admin/clientes',       label: 'Clientes',                icon: <IconUsers /> },
-  { href: '/admin/negocio',        label: 'Información del negocio', icon: <IconStore /> },
-  { href: '/admin/notificaciones', label: 'Notificaciones',          icon: <IconMail /> },
-  { href: '/admin/operacion',      label: 'Estados de operación',    icon: <IconCheckCircle /> },
-]
+import { NAV_ITEMS } from './navItems'
+import { IconPaw } from './AdminIcons'
 
 export default function AdminSidebar() {
   const pathname = usePathname()
@@ -25,7 +12,7 @@ export default function AdminSidebar() {
   return (
     <aside
       className="hidden md:flex flex-col w-sidebar shrink-0 bg-primary-deeper
-                 min-h-screen sticky top-0 h-screen overflow-y-auto"
+                 h-full overflow-y-auto"
       aria-label="Navegación administrativa"
     >
       <SidebarBrand />
@@ -47,7 +34,7 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      <SidebarFooter />
+      <AdminSidebarFooter />
     </aside>
   )
 }
@@ -72,7 +59,7 @@ function SidebarBrand() {
   )
 }
 
-function SidebarFooter() {
+export function AdminSidebarFooter({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="px-3 pb-6 pt-4 flex flex-col gap-2
                     border-t border-primary-nav/40 mt-4">
@@ -81,6 +68,7 @@ function SidebarFooter() {
       </p>
       <Link
         href="/"
+        onClick={onNavigate}
         className="text-13 text-background-surface hover:text-border-muted
                    transition-colors px-3 focus-visible:outline-none
                    focus-visible:ring-1 focus-visible:ring-background-surface rounded-sm"

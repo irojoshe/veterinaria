@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Esto quita el warning de "Blocked cross-origin request" en tu red local
+  allowedDevOrigins: ['10.2.0.2'],
   images: {
     // Las fotos de los servicios vienen de URLs externas guardadas en la DB.
     remotePatterns: [
@@ -18,10 +20,16 @@ const nextConfig = {
       { protocol: 'https', hostname: 'clinicaveterinarium.es' },
       // CloudFront (fotos subidas por clientes/admin)
       { protocol: 'https', hostname: '**.cloudfront.net' },
+      // ImageKit (fotos subidas desde el panel de administracion)
+      { protocol: 'https', hostname: 'ik.imagekit.io' },
       // Google rota entre tbn0..tbn3 segun el resultado; el comodin cubre todos.
       { protocol: 'https', hostname: '**.gstatic.com' },
+
+      // 🔥 ESTO ES LO QUE FALTABA (Las fotos de mascotas de Unsplash)
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: '**.unsplash.com' },
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
