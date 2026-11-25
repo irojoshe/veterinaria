@@ -35,9 +35,7 @@ export default function ContactoSection({ negocio }: { negocio: Negocio }) {
         <div className="order-3 md:order-none md:col-start-1 md:row-start-2 flex flex-col gap-gap-lg">
           <dl className="flex flex-col gap-3.5">
             <DataRow label="Dirección" value={negocio.direccion} />
-            <DataRow label="Lun–vie"   value={negocio.horario_semana} />
-            <DataRow label="Sábados"   value={negocio.horario_sabado} />
-            <DataRow label="Domingos"  value={negocio.horario_domingo} />
+            <DataRow label="Horario"   value={negocio.horario} />
             <DataRow label="Teléfono"  value={negocio.telefono} />
           </dl>
 

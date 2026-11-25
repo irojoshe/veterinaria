@@ -1,24 +1,35 @@
 'use client'
 
 import { useActionState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { citaSchema, type CitaFormValues } from '@/lib/validations/cita'
 import { crearCita, type ActionResult } from '../actions'
-import Button from '@/components/ui/Button'
 import SeccionPropietario from './SeccionPropietario'
 import SeccionMascota from './SeccionMascota'
 import SeccionPreferencias from './SeccionPreferencias'
-import ResumenCita from './ResumenCita'
+import CitaEnvio from './CitaEnvio'
+import CitaLateral from './CitaLateral'
 import type { ServicioPublico } from '@/lib/types'
 
-interface Props { servicios: ServicioPublico[] }
+interface Props {
+  servicios: ServicioPublico[]
+}
 
 export default function CitaForm({ servicios }: Props) {
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(
     crearCita,
     null
   )
+
+  // Preselección desde la URL (?servicio=slug). Se lee en el cliente para que
+  // la página siga siendo estática.
+  const searchParams = useSearchParams()
+  const slug = searchParams.get('servicio')
+  const servicioInicial = servicios.some((s) => s.slug === slug)
+    ? slug ?? undefined
+    : undefined
 
   const {
     register,
@@ -27,7 +38,11 @@ export default function CitaForm({ servicios }: Props) {
     formState: { errors },
   } = useForm<CitaFormValues>({
     resolver: zodResolver(citaSchema),
-    defaultValues: { _hp: '', acepta_privacidad: false },
+    defaultValues: {
+      _hp: '',
+      acepta_privacidad: false,
+      ...(servicioInicial ? { servicio: servicioInicial } : {}),
+    },
   })
 
   // Observa los valores para el resumen en tiempo real
@@ -61,7 +76,7 @@ export default function CitaForm({ servicios }: Props) {
         tabIndex={-1}
         aria-hidden="true"
         autoComplete="off"
-        className="absolute -left-[9999px] opacity-0 pointer-events-none"
+        className="sr-only"
         {...register('_hp')}
       />
 
@@ -76,86 +91,16 @@ export default function CitaForm({ servicios }: Props) {
             servicios={servicios}
           />
 
-          {/* Privacidad y envío */}
-          <div className="flex flex-col gap-4">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                className="mt-0.5 w-5 h-5 rounded-sm border-border accent-primary"
-                {...register('acepta_privacidad')}
-              />
-              <span className="text-13 text-text-main">
-                He leído el aviso de privacidad y autorizo el uso de mis datos
-                para gestionar esta solicitud. *
-              </span>
-            </label>
-            {errors.acepta_privacidad && (
-              <p className="text-12 text-status-cancelled" role="alert">
-                {errors.acepta_privacidad.message}
-              </p>
-            )}
-
-            <p className="text-12 text-text-muted">
-              No necesitas crear una cuenta. Los campos con * son obligatorios.
-            </p>
-
-            {/* Error del servidor */}
-            {state && !state.success && (
-              <div
-                role="alert"
-                className="flex items-start gap-3 p-4 rounded-lg
-                           bg-status-cancelled-bg text-status-cancelled text-13"
-              >
-                <span aria-hidden="true">⚠</span>
-                <span>{state.error}</span>
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              size="lg"
-              fullWidth
-              loading={isPending}
-              disabled={isPending}
-            >
-              {isPending ? 'Enviando…' : 'Enviar solicitud →'}
-            </Button>
-
-            <p className="text-12 text-text-muted text-center">
-              Al enviarla recibirás un email de recepción. Tu cita solo estará
-              confirmada cuando la clínica te lo comunique.
-            </p>
-          </div>
+          <CitaEnvio
+            register={register}
+            errors={errors}
+            state={state}
+            isPending={isPending}
+          />
         </div>
 
         {/* Columna derecha: resumen + aviso urgencia */}
-        <div className="flex flex-col gap-4 w-full lg:w-panel-md shrink-0">
-          <ResumenCita values={watched} />
-
-          <div className="flex flex-col gap-3 p-5 rounded-lg bg-background-surface
-                          border border-border">
-            <p className="text-14 font-semibold text-text-main">¿Necesitas orientación?</p>
-            <p className="text-13 text-text-muted">
-              Podemos ayudarte a elegir el servicio antes de enviar tu solicitud.
-            </p>
-            <a
-              href="https://wa.me/34900123456"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-14 font-semibold text-primary hover:underline
-                         focus-visible:outline-none focus-visible:ring-2
-                         focus-visible:ring-primary rounded-sm"
-            >
-              Consultar por WhatsApp
-            </a>
-            <p className="text-12 text-text-muted">Lun–vie 09:00–19:00 · Sáb 10:00–14:00</p>
-          </div>
-
-          <p className="text-12 text-status-cancelled px-1">
-            Si tu mascota necesita atención urgente, no esperes respuesta a esta
-            solicitud. Contacta con un servicio veterinario de urgencias.
-          </p>
-        </div>
+        <CitaLateral values={watched} />
       </div>
     </form>
   )
