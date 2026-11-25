@@ -117,9 +117,9 @@ export default function SubirFoto({
             onClick={handleRemove}
             disabled={isUploading}
             aria-label="Eliminar foto"
-            className="h-btn px-3 rounded-md text-12 font-semibold text-text-main
-                       bg-background-surface border border-border outline-none
-                       hover:bg-status-cancelled/10 hover:text-status-cancelled
+            className="h-btn px-3 rounded-md text-12 font-semibold text-white
+                       bg-status-cancelled border border-status-cancelled outline-none
+                       hover:bg-status-cancelled/90
                        disabled:cursor-not-allowed disabled:opacity-60"
           >
             Eliminar foto

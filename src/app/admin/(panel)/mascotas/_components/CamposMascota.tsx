@@ -17,15 +17,26 @@ const CHECKBOXES = [
   { name: 'compatible_mascotas', label: 'Compatible con mascotas', fallback: true },
 ] as const
 
-interface Props {
-  mascota?: Mascota
+export interface CamposMascotaValues {
+  sexo: string
+  fecha_nacimiento: string
+  precio: number
+  historia: string
+  estado_adopcion: string
+  vacunado: boolean
+  esterilizado: boolean
+  microchip: boolean
+  compatible_ninos: boolean
+  compatible_mascotas: boolean
 }
 
-/**
- * Fields the `mascotas` table requires. They used to be hidden inputs with
- * empty defaults, which violated `mascotas_sexo_check` and the `date` cast.
- */
-export default function CamposMascota({ mascota }: Props) {
+interface Props {
+  values: CamposMascotaValues
+  onChange: (field: keyof CamposMascotaValues, value: string | number | boolean) => void
+  errors?: Record<string, string>
+}
+
+export default function CamposMascota({ values, onChange, errors = {} }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -33,7 +44,8 @@ export default function CamposMascota({ mascota }: Props) {
           <label className="text-13 font-semibold text-text-main">Sexo</label>
           <select
             name="sexo"
-            defaultValue={mascota?.sexo ?? ''}
+            value={values.sexo}
+            onChange={(e) => onChange('sexo', e.target.value)}
             className="h-btn px-3.5 rounded-md text-14 text-text-main
                        bg-background-surface border border-border outline-none
                        focus:ring-2 focus:ring-primary"
@@ -42,12 +54,17 @@ export default function CamposMascota({ mascota }: Props) {
             <option value="macho">Macho</option>
             <option value="hembra">Hembra</option>
           </select>
+          {errors.sexo && (
+            <p className="text-12 text-status-cancelled">{errors.sexo}</p>
+          )}
         </div>
         <Input
           label="Fecha de nacimiento"
           name="fecha_nacimiento"
           type="date"
-          defaultValue={mascota?.fecha_nacimiento ?? ''}
+          value={values.fecha_nacimiento}
+          onChange={(e) => onChange('fecha_nacimiento', e.target.value)}
+          error={errors.fecha_nacimiento}
         />
       </div>
 
@@ -58,7 +75,11 @@ export default function CamposMascota({ mascota }: Props) {
           type="number"
           min="0"
           step="0.01"
-          defaultValue={mascota?.precio ?? 0}
+          value={values.precio}
+          onChange={(e) =>
+            onChange('precio', e.target.value === '' ? 0 : Number(e.target.value))
+          }
+          error={errors.precio}
         />
         <div className="flex flex-col gap-1.5">
           <label className="text-13 font-semibold text-text-main">
@@ -66,7 +87,8 @@ export default function CamposMascota({ mascota }: Props) {
           </label>
           <select
             name="estado_adopcion"
-            defaultValue={mascota?.estado_adopcion ?? 'disponible'}
+            value={values.estado_adopcion}
+            onChange={(e) => onChange('estado_adopcion', e.target.value)}
             className="h-btn px-3.5 rounded-md text-14 text-text-main
                        bg-background-surface border border-border outline-none
                        focus:ring-2 focus:ring-primary"
@@ -77,6 +99,9 @@ export default function CamposMascota({ mascota }: Props) {
               </option>
             ))}
           </select>
+          {errors.estado_adopcion && (
+            <p className="text-12 text-status-cancelled">{errors.estado_adopcion}</p>
+          )}
         </div>
       </div>
 
@@ -85,11 +110,15 @@ export default function CamposMascota({ mascota }: Props) {
         <textarea
           name="historia"
           rows={4}
-          defaultValue={mascota?.historia ?? ''}
+          value={values.historia}
+          onChange={(e) => onChange('historia', e.target.value)}
           className="w-full px-3.5 py-3.5 rounded-md text-14 text-text-main
                      bg-background-surface border border-border outline-none resize-none
                      focus:ring-2 focus:ring-primary"
         />
+        {errors.historia && (
+          <p className="text-12 text-status-cancelled">{errors.historia}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -103,8 +132,9 @@ export default function CamposMascota({ mascota }: Props) {
               <input
                 type="checkbox"
                 name={checkbox.name}
-                defaultChecked={
-                  mascota ? Boolean(mascota[checkbox.name]) : checkbox.fallback
+                checked={Boolean(values[checkbox.name as keyof CamposMascotaValues])}
+                onChange={(e) =>
+                  onChange(checkbox.name as keyof CamposMascotaValues, e.target.checked)
                 }
                 className="mt-0.5 w-5 h-5 rounded-sm border-border accent-primary"
               />
