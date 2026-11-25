@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useState, useTransition } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
@@ -53,7 +53,9 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
     compatible_mascotas: mascota?.compatible_mascotas ?? true,
   })
   const [isUploading, setIsUploading] = useState(false)
+  const [eliminarFoto, setEliminarFoto] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isPendingTransition, startTransition] = useTransition()
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -113,7 +115,9 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       return
     }
     setErrors({})
-    formAction(new FormData(e.currentTarget))
+    startTransition(() => {
+      formAction(new FormData(e.currentTarget))
+    })
   }
 
   return (
@@ -121,6 +125,7 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
       <input type="hidden" name="foto_url" value={form.foto_url} readOnly />
       <input type="hidden" name="imagekit_file_id" value={form.imagekit_file_id} readOnly />
+      <input type="hidden" name="eliminar_foto" value={eliminarFoto ? 'true' : 'false'} readOnly />
 
       <Input
         label="Nombre *"
@@ -199,8 +204,8 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       <div className="flex gap-3 pt-2 border-t border-border">
         <Button
           type="submit"
-          loading={isPending || isUploading}
-          disabled={isPending || isUploading}
+          loading={isPending || isPendingTransition || isUploading}
+          disabled={isPending || isPendingTransition || isUploading}
         >
           {isUploading
             ? 'Subiendo foto...'

@@ -65,6 +65,7 @@ export async function getMascotas(): Promise<MascotaRow[]> {
 
 export async function upsertMascota(
   data: Mascota,
+  eliminarFoto = false,
 ): Promise<ResultadoEscritura> {
   try {
     const supabase = await createSupabaseServerClient()
@@ -74,8 +75,9 @@ export async function upsertMascota(
       : { imageUrl: null, fileId: null }
 
     // An empty upload keeps the stored photo instead of wiping it.
-    const fotoUrl = data.foto_url ?? previous.imageUrl
-    const fileId = data.imagekit_file_id ?? previous.fileId
+    // An explicit delete (eliminarFoto) wipes it.
+    const fotoUrl = eliminarFoto ? null : (data.foto_url ?? previous.imageUrl)
+    const fileId = eliminarFoto ? null : (data.imagekit_file_id ?? previous.fileId)
 
     const payload = {
       nombre: data.nombre,

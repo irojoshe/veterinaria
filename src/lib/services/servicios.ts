@@ -122,6 +122,7 @@ async function resolveSlugUnico(
 
 export async function upsertServicio(
   data: Servicio,
+  eliminarFoto = false,
 ): Promise<ResultadoEscritura> {
   try {
     const supabase = await createSupabaseServerClient()
@@ -131,8 +132,9 @@ export async function upsertServicio(
       : { imageUrl: null, fileId: null }
 
     // An empty upload keeps the stored photo instead of wiping it.
-    const imagenUrl = data.imagen_url ?? previous.imageUrl
-    const fileId = data.imagekit_file_id ?? previous.fileId
+    // An explicit delete (eliminarFoto) wipes it.
+    const imagenUrl = eliminarFoto ? null : (data.imagen_url ?? previous.imageUrl)
+    const fileId = eliminarFoto ? null : (data.imagekit_file_id ?? previous.fileId)
 
     const payload = {
       nombre: data.nombre,

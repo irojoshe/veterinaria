@@ -52,6 +52,8 @@ export async function guardarServicio(
       }
     }
 
+    const eliminarFoto = formData.get('eliminar_foto') === 'true'
+
     const payload: Servicio = {
       id: parsed.data.id,
       nombre: parsed.data.nombre,
@@ -68,7 +70,7 @@ export async function guardarServicio(
       imagekit_file_id: payload.imagekit_file_id,
     })
 
-    const result = await upsertServicio(payload)
+    const result = await upsertServicio(payload, eliminarFoto)
 
     if (!result.success) {
       return {

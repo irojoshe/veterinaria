@@ -61,6 +61,8 @@ export async function guardarMascota(
       }
     }
 
+    const eliminarFoto = formData.get('eliminar_foto') === 'true'
+
     const payload: Mascota = {
       id: parsed.data.id,
       nombre: parsed.data.nombre,
@@ -86,7 +88,7 @@ export async function guardarMascota(
       imagekit_file_id: payload.imagekit_file_id,
     })
 
-    const result = await upsertMascota(payload)
+    const result = await upsertMascota(payload, eliminarFoto)
 
     if (!result.success) {
       return {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useState, useTransition } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import SubirFoto from '@/components/admin/SubirFoto'
@@ -35,7 +35,9 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
     imagekit_file_id: servicio?.imagekit_file_id ?? '',
   })
   const [isUploading, setIsUploading] = useState(false)
+  const [eliminarFoto, setEliminarFoto] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isPendingTransition, startTransition] = useTransition()
 
   useEffect(() => {
     if (state?.success) onSuccess()
@@ -73,7 +75,9 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       return
     }
     setErrors({})
-    formAction(new FormData(e.currentTarget))
+    startTransition(() => {
+      formAction(new FormData(e.currentTarget))
+    })
   }
 
   return (
@@ -167,8 +171,8 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       <div className="flex gap-3 pt-2 border-t border-border">
         <Button
           type="submit"
-          loading={isPending || isUploading}
-          disabled={isPending || isUploading}
+          loading={isPending || isPendingTransition || isUploading}
+          disabled={isPending || isPendingTransition || isUploading}
         >
           {isUploading
             ? 'Subiendo foto...'
