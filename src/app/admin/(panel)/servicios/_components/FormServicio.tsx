@@ -41,10 +41,18 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
     if (state?.success) onSuccess()
   }, [state, onSuccess])
 
-  const update = (field: keyof FormState, value: string) =>
+  const update = (field: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const parsed = servicioSchema.safeParse({
       id: servicio?.id,
       nombre: form.nombre,
@@ -56,7 +64,6 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       imagekit_file_id: form.imagekit_file_id || null,
     })
     if (!parsed.success) {
-      e.preventDefault()
       const flat = parsed.error.flatten().fieldErrors
       const next: Record<string, string> = {}
       for (const [k, v] of Object.entries(flat)) {
@@ -66,10 +73,11 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       return
     }
     setErrors({})
+    formAction(new FormData(e.currentTarget))
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {servicio?.id && <input type="hidden" name="id" value={servicio.id} />}
       <input type="hidden" name="imagen_url" value={form.imagen_url} readOnly />
       <input

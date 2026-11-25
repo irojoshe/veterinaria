@@ -59,8 +59,15 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
     if (state?.success) onSuccess()
   }, [state, onSuccess])
 
-  const update = (field: keyof FormState, value: string | number | boolean) =>
+  const update = (field: keyof FormState, value: string | number | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const camposValues: CamposMascotaValues = {
     sexo: form.sexo,
@@ -76,6 +83,7 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const parsed = mascotaSchema.safeParse({
       id: mascota?.id,
       nombre: form.nombre,
@@ -96,7 +104,6 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       compatible_mascotas: form.compatible_mascotas,
     })
     if (!parsed.success) {
-      e.preventDefault()
       const flat = parsed.error.flatten().fieldErrors
       const next: Record<string, string> = {}
       for (const [k, v] of Object.entries(flat)) {
@@ -106,10 +113,11 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       return
     }
     setErrors({})
+    formAction(new FormData(e.currentTarget))
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {mascota?.id && <input type="hidden" name="id" value={mascota.id} />}
       <input type="hidden" name="foto_url" value={form.foto_url} readOnly />
       <input type="hidden" name="imagekit_file_id" value={form.imagekit_file_id} readOnly />
