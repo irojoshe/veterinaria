@@ -104,10 +104,14 @@ export default function FormServicio({ servicio, onSuccess }: Props) {
       <div className="flex gap-3 pt-2 border-t border-border">
         <Button
           type="submit"
-          loading={isPending}
+          loading={isPending || isUploading}
           disabled={isPending || isUploading}
         >
-          {servicio ? 'Guardar cambios' : 'Crear servicio'}
+          {isUploading
+            ? 'Subiendo foto...'
+            : servicio
+              ? 'Guardar cambios'
+              : 'Crear servicio'}
         </Button>
       </div>
     </form>

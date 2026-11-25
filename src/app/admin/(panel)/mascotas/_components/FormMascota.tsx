@@ -102,10 +102,14 @@ export default function FormMascota({ mascota, onSuccess }: Props) {
       <div className="flex gap-3 pt-2 border-t border-border">
         <Button
           type="submit"
-          loading={isPending}
+          loading={isPending || isUploading}
           disabled={isPending || isUploading}
         >
-          {mascota ? 'Guardar cambios' : 'Crear mascota'}
+          {isUploading
+            ? 'Subiendo foto...'
+            : mascota
+              ? 'Guardar cambios'
+              : 'Crear mascota'}
         </Button>
       </div>
     </form>

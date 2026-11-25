@@ -25,6 +25,7 @@ export default function SubirFoto({
     currentUrl ?? null,
   )
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+  const [localError, setLocalError] = useState<string | null>(null)
   const objectUrlRef = useRef<string | null>(null)
   const inputId = useId()
 
@@ -42,6 +43,17 @@ export default function SubirFoto({
     const file = event.target.files?.[0]
     if (!file) return
 
+    setLocalError(null)
+
+    if (!file.type.startsWith('image/')) {
+      setLocalError('El archivo debe ser una imagen.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setLocalError('El archivo no puede superar los 5 MB.')
+      return
+    }
+
     if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current)
     const objectUrl = URL.createObjectURL(file)
     objectUrlRef.current = objectUrl
@@ -54,6 +66,17 @@ export default function SubirFoto({
     } catch {
       // The hook already exposes the error message.
     }
+  }
+
+  const handleRemove = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current)
+      objectUrlRef.current = null
+    }
+    setPreviewUrl(null)
+    setUploadedUrl(null)
+    setLocalError(null)
+    onUploaded('', '')
   }
 
   const displayedUrl = uploadedUrl ?? previewUrl
@@ -80,14 +103,28 @@ export default function SubirFoto({
       />
 
       {displayedUrl && (
-        // Plain img: the preview can be a local blob URL that next/image rejects.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={displayedUrl}
-          alt={`Previsualización de ${label.toLowerCase()}`}
-          className="h-32 w-full max-w-64 rounded-md object-cover
-                     border border-border bg-background-surface"
-        />
+        <div className="flex items-start gap-3">
+          {/* Plain img: the preview can be a local blob URL that next/image rejects. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={displayedUrl}
+            alt={`Previsualización de ${label.toLowerCase()}`}
+            className="h-32 w-full max-w-64 rounded-md object-cover
+                       border border-border bg-background-surface"
+          />
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={isUploading}
+            aria-label="Eliminar foto"
+            className="h-btn px-3 rounded-md text-12 font-semibold text-text-main
+                       bg-background-surface border border-border outline-none
+                       hover:bg-status-cancelled/10 hover:text-status-cancelled
+                       disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Eliminar foto
+          </button>
+        </div>
       )}
 
       {isUploading && (
@@ -110,9 +147,9 @@ export default function SubirFoto({
         </div>
       )}
 
-      {error && (
+      {(localError ?? error) && (
         <p role="alert" className="text-12 text-status-cancelled">
-          {error}
+          {localError ?? error}
         </p>
       )}
 
